@@ -1,6 +1,6 @@
 output "cluster_name" {
   value       = google_container_cluster.primary.name
-  description = "The name of the GKE cluster"
+  description = "The name of the GKE Autopilot cluster"
 }
 
 output "cluster_endpoint" {
@@ -18,7 +18,7 @@ output "workload_identity_pool" {
   description = "The Workload Identity Pool for the cluster"
 }
 
-output "ondemand_node_pool_name" {
-  value       = google_container_node_pool.ondemand_nodes.name
-  description = "Name of the On-Demand node pool"
+output "cluster_id" {
+  value       = google_container_cluster.primary.id
+  description = "The unique ID of the GKE Autopilot cluster"
 }

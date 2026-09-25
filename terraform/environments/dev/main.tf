@@ -53,20 +53,16 @@ module "vpc" {
   services_cidr = "10.20.0.0/20"
 }
 
-# 2. VPC-Native GKE Cluster (Dev: Zonal, Cost-optimized with Spot nodes)
+# 2. VPC-Native GKE Autopilot Cluster (Dev: Cost-optimized with Spot Pods)
 module "gke" {
   source                        = "../../modules/gke"
   project_id                    = var.project_id
   region                        = var.region
   environment                   = "dev"
-  is_regional                   = false
-  enable_spot_pool              = true
   network_id                    = module.vpc.network_id
   subnet_id                     = module.vpc.subnet_id
   pods_secondary_range_name     = module.vpc.pods_secondary_range_name
   services_secondary_range_name = module.vpc.services_secondary_range_name
-  ondemand_machine_type         = "e2-standard-4"
-  spot_machine_type             = "e2-standard-4"
 }
 
 # 3. Artifact Registry for Container Images

@@ -53,19 +53,16 @@ module "vpc" {
   services_cidr = "10.40.0.0/20"
 }
 
-# 2. VPC-Native GKE Cluster (Prod: Regional HA Cluster across multiple zones)
+# 2. VPC-Native GKE Autopilot Cluster (Prod: Multi-zone Regional HA)
 module "gke" {
   source                        = "../../modules/gke"
   project_id                    = var.project_id
   region                        = var.region
   environment                   = "prod"
-  is_regional                   = true
-  enable_spot_pool              = false
   network_id                    = module.vpc.network_id
   subnet_id                     = module.vpc.subnet_id
   pods_secondary_range_name     = module.vpc.pods_secondary_range_name
   services_secondary_range_name = module.vpc.services_secondary_range_name
-  ondemand_machine_type         = "e2-standard-4"
 }
 
 # 3. Artifact Registry for Container Images
