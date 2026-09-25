@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: boutique-prod
+
+resources:
+  - namespace.yaml
+  - ../../base
+  - ingress.yaml
+
+labels:
+  - pairs:
+      environment: prod
+      managed-by: argocd
+
+patches:
+  - path: patch-resources.yaml

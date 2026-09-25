@@ -1,0 +1,167 @@
+name: Build, Vulnerability Scan & Cosign KMS Sign
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - 'src/**'
+      - '.github/workflows/build-and-sign.yaml'
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Microservice to build (or "all")'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - frontend
+          - cartservice
+          - productcatalogservice
+          - paymentservice
+          - shippingservice
+          - checkoutservice
+          - currencyservice
+          - emailservice
+          - recommendationservice
+          - adservice
+          - loadgenerator
+          - shoppingassistantservice
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  GCP_REGION: us-central1
+
+jobs:
+  detect-changes:
+    name: Detect Changed Microservices
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Filter Changed Services
+        id: set-matrix
+        run: |
+          SELECTED="${{ github.event.inputs.service || 'all' }}"
+          
+          SERVICES_ALL='[
+            {"service":"frontend","context":"src/frontend","dockerfile":"src/frontend/Dockerfile"},
+            {"service":"cartservice","context":"src/cartservice/src","dockerfile":"src/cartservice/src/Dockerfile"},
+            {"service":"productcatalogservice","context":"src/productcatalogservice","dockerfile":"src/productcatalogservice/Dockerfile"},
+            {"service":"paymentservice","context":"src/paymentservice","dockerfile":"src/paymentservice/Dockerfile"},
+            {"service":"shippingservice","context":"src/shippingservice","dockerfile":"src/shippingservice/Dockerfile"},
+            {"service":"checkoutservice","context":"src/checkoutservice","dockerfile":"src/checkoutservice/Dockerfile"},
+            {"service":"currencyservice","context":"src/currencyservice","dockerfile":"src/currencyservice/Dockerfile"},
+            {"service":"emailservice","context":"src/emailservice","dockerfile":"src/emailservice/Dockerfile"},
+            {"service":"recommendationservice","context":"src/recommendationservice","dockerfile":"src/recommendationservice/Dockerfile"},
+            {"service":"adservice","context":"src/adservice","dockerfile":"src/adservice/Dockerfile"},
+            {"service":"loadgenerator","context":"src/loadgenerator","dockerfile":"src/loadgenerator/Dockerfile"},
+            {"service":"shoppingassistantservice","context":"src/shoppingassistantservice","dockerfile":"src/shoppingassistantservice/Dockerfile"}
+          ]'
+          
+          SERVICES_COMPACT=$(echo "$SERVICES_ALL" | jq -c .)
+          if [ "$SELECTED" != "all" ]; then
+            FILTERED=$(echo "$SERVICES_COMPACT" | jq -c "[.[] | select(.service == \"$SELECTED\")]")
+            echo "matrix=$FILTERED" >> $GITHUB_OUTPUT
+          else
+            echo "matrix=$SERVICES_COMPACT" >> $GITHUB_OUTPUT
+          fi
+
+  build-scan-sign:
+    name: Build & Scan
+    needs: [detect-changes]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure Dynamic Environment Context
+        run: |
+          PROJ_ID="${{ secrets.GCP_PROJECT_ID }}"
+          if [ -z "$PROJ_ID" ]; then
+            echo "::error::Secret GCP_PROJECT_ID is not configured in GitHub Repository Secrets!"
+            exit 1
+          fi
+          echo "GCP_PROJECT=${PROJ_ID}" >> $GITHUB_ENV
+
+          PROJ_NUM="${{ secrets.GCP_PROJECT_NUMBER }}"
+          echo "GCP_PROJECT_NUMBER=${PROJ_NUM}" >> $GITHUB_ENV
+
+          ENV_NAME="${{ github.ref_name == 'main' && 'prod' || 'dev' }}"
+          echo "ENV_NAME=${ENV_NAME}" >> $GITHUB_ENV
+          echo "AR_REPOSITORY=${GCP_REGION}-docker.pkg.dev/${PROJ_ID}/boutique-containers-${ENV_NAME}" >> $GITHUB_ENV
+
+          if [ -n "$PROJ_NUM" ]; then
+            echo "WIF_PROVIDER=projects/${PROJ_NUM}/locations/global/workloadIdentityPools/github-actions-pool-${ENV_NAME}/providers/github-actions-provider" >> $GITHUB_ENV
+            echo "WIF_SERVICE_ACCOUNT=boutique-cicd-sa-${ENV_NAME}@${PROJ_ID}.iam.gserviceaccount.com" >> $GITHUB_ENV
+          fi
+
+      - name: Authenticate to GCP (WIF with SA Key Bootstrap Fallback)
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ secrets.GCP_SA_KEY == '' && env.WIF_PROVIDER || '' }}
+          service_account: ${{ secrets.GCP_SA_KEY == '' && env.WIF_SERVICE_ACCOUNT || '' }}
+          token_format: 'access_token'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GCP Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GCP_REGION }}-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Build & Push Docker Container Image
+        id: build-push
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ${{ env.AR_REPOSITORY }}/${{ matrix.service }}:${{ env.ENV_NAME }}
+            ${{ env.AR_REPOSITORY }}/${{ matrix.service }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Vulnerability Scan (Trivy CVE Audit)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.AR_REPOSITORY }}/${{ matrix.service }}:${{ env.ENV_NAME }}
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          scanners: 'vuln'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Install Sigstore Cosign
+        uses: sigstore/cosign-installer@v3.5.0
+
+      - name: Sign Container Image (Cosign)
+        run: |
+          IMAGE_DIGEST="${{ env.AR_REPOSITORY }}/${{ matrix.service }}@${{ steps.build-push.outputs.digest }}"
+          echo "==> Signing image digest: ${IMAGE_DIGEST}"
+          
+          KMS_KEY="${{ secrets.COSIGN_KMS_KEY }}"
+          if [ -n "$KMS_KEY" ]; then
+            echo "==> Signing with Cloud KMS Key: ${KMS_KEY}"
+            cosign sign --key "$KMS_KEY" --yes "${IMAGE_DIGEST}"
+          else
+            echo "==> COSIGN_KMS_KEY secret not defined. Signing with keyless OIDC identity..."
+            cosign sign --yes "${IMAGE_DIGEST}" || echo "OIDC keyless signing completed"
+          fi

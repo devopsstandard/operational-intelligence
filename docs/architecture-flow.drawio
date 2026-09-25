@@ -1,0 +1,197 @@
+<mxfile host="app.diagrams.net" modified="2026-09-12T14:45:00.000Z" agent="5.0" version="22.1.16" type="device">
+  <diagram id="gitops-gke-architecture" name="GitOps Architecture Flow">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1100" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ==================== LEFT: DEVELOPERS ==================== -->
+        <!-- Software Developer -->
+        <mxCell id="node_soft_dev" value="&lt;b style=&quot;font-size:13px;&quot;&gt;Software Developer&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px;&quot;&gt;Feature Branches &amp;amp; PRs&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iMTAiIHk9IjEyIiB3aWR0aD0iNDQiIGhlaWdodD0iMjgiIHJ4PSIzIiBmaWxsPSIjMEYxNzJBIi8+PHJlY3QgeD0iMTQiIHk9IjE2IiB3aWR0aD0iMzYiIGhlaWdodD0iMjAiIGZpbGw9IiMyNTYzRUIiLz48cGF0aCBkPSJNMjIgMjNsLTQgMyA0IDNtOC02bDQgMy00IDNtLTMtN2wtMiA4IiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTQgNDRoNTZsLTQgNkg4eiIgZmlsbD0iIzk0QTNCOCIvPjwvc3ZnPg==;" vertex="1" parent="1">
+          <mxGeometry x="60" y="180" width="70" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- DevOps -->
+        <mxCell id="node_devops" value="&lt;b style=&quot;font-size:13px;&quot;&gt;DevOps&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px;&quot;&gt;IaC &amp;amp; GitOps Manifests&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iMTAiIHk9IjEyIiB3aWR0aD0iNDQiIGhlaWdodD0iMjgiIHJ4PSIzIiBmaWxsPSIjMEYxNzJBIi8+PHJlY3QgeD0iMTQiIHk9IjE2IiB3aWR0aD0iMzYiIGhlaWdodD0iMjAiIGZpbGw9IiMwNTk2NjkiLz48Y2lyY2xlIGN4PSIyNyIgY3k9IjI2IiByPSIzIiBzdHJva2U9IiNGRkYiIHN0cm9rZS13aWR0aD0iMS41IiBmaWxsPSJub25lIi8+PGNpcmNsZSBjeD0iMzciIGN5PSIyNiIgcj0iMyIgc3Ryb2tlPSIjRkZGIiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0yNyAyM2E3IDcgMCAwIDEgMTAgME0zNyAyOWE3IDcgMCAwIDEtMTAgMCIgc3Ryb2tlPSIjRkZGIiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik00IDQ0aDU2bC00IDZIOHoiIGZpbGw9IiM5NEEzQjgiLz48L3N2Zz4=;" vertex="1" parent="1">
+          <mxGeometry x="60" y="470" width="70" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== GITHUB REPO ==================== -->
+        <mxCell id="node_github" value="&lt;b style=&quot;font-size:14px;&quot;&gt;GitHub&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px;&quot;&gt;Marketplace-microservices&lt;br&gt;(dev / main)&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5OCA5NiI+PGNpcmNsZSBjeD0iNDkiIGN5PSI0OCIgcj0iNDgiIGZpbGw9IiMxODE3MTciLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4Ljg1NCAxMEMyNy4yNDIgMTAgOS43NzEgMjcuNiA5Ljc3MSA0OS4zNzRjMCAxNy40MDUgMTEuMTk0IDMyLjEzOCAyNi43MjQgMzcuMzUyIDEuOTQyLjM5MiAyLjY1My0uODQ3IDIuNjUzLTEuODcyIDAtLjk0Ni0uMDM0LTQuMTA5LS4wMzQtNy40MjYtMTAuNzkyIDIuMzQ5LTEzLjA4OC00LjY2Ni0xMy4wODgtNC42NjYtMS43ODQtNC41MDYtNC4zNjgtNS43MTItNC4zNjgtNS43MTItMy41NTctMi40NDUuMjc2LTIuMzkyLjI3Ni0yLjM5MiAzLjkyNi4yNzYgNi4wMDggNC4wMzYgNi4wMDggNC4wMzYgMy40ODMgNS45NjYgOS4xMjcgNC4yMzggMTEuMzQ5IDMuMjQyLjM0NS0yLjUyNCAxLjM1Mi00LjIzOCAyLjQ2Mi01LjIxOC04LjYwOC0uOTgtMTcuNjY0LTQuMzEtMTcuNjY0LTE5LjI2NyAwLTQuMjYyIDEuNTE2LTcuNzQ3IDQuMDAyLTEwLjQ2Ny0uNDE0LS45ODYtMS43MzktNC45NjYuMzc5LTEwLjMzMiAwIDAgMy4yODYtMS4wNSAxMC43NTQgNC4wMSAzLjEyMS0uODY4IDYuNDY2LTEuMzAyIDkuNzkyLTEuMzE1IDMuMzI1LjAxMyA2LjY3MS40NDcgOS43OTIgMS4zMTUgNy40NjktNS4wNiAxMC43NTUtNC4wMSAxMC43NTUtNC4wMSAyLjExOCA1LjM2Ni43OTMgOS4zNDYuMzc5IDEwLjMzMiAyLjQ4NiAyLjcyIDQuMDAyIDYuMjA1IDQuMDAyIDEwLjQ2NyAwIDE0Ljk5Mi05LjA5IDE4LjI3NC0xNy43MzMgMTkuMjMzIDEuMzk4IDEuMjE1IDIuNjY2IDMuNjIxIDIuNjY2IDcuMzA0IDAgNS4yOC0uMDM0IDkuNTI2LS4wMzQgMTAuODM4IDAgMS4wMzQuNzExIDIuMjggMi42ODMgMS44NzJDNzcuMDM1IDgxLjUxMiA4OC4yMjkgNjYuNzc5IDg4LjIyOSA0OS4zNzQgODguMjI5IDI3LjYgNzAuNDY2IDEwIDQ4Ljg1NCAxMHoiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=;" vertex="1" parent="1">
+          <mxGeometry x="240" y="320" width="75" height="75" as="geometry" />
+        </mxCell>
+
+        <!-- Connectors Dev -> GitHub -->
+        <mxCell id="edge_soft_gh" value="App Code &amp;amp; PRs" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.3;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2;fontColor=#0F172A;fontSize=11;fontStyle=1;" edge="1" parent="1" source="node_soft_dev" target="node_github">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_devops_gh" value="IaC &amp;amp; Manifests" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.7;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2;fontColor=#0F172A;fontSize=11;fontStyle=1;" edge="1" parent="1" source="node_devops" target="node_github">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== GITHUB ACTIONS ICON ==================== -->
+        <mxCell id="node_gh_actions_icon" value="&lt;b style=&quot;font-size:13px;color:#2563EB;&quot;&gt;GitHub Actions&lt;/b&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMyMDg4RkYiLz48Y2lyY2xlIGN4PSIyMiIgY3k9IjI0IiByPSI1IiBmaWxsPSIjRkZGRkZGIi8+PGNpcmNsZSBjeD0iNDIiIGN5PSIyNCIgcj0iNSIgZmlsbD0iI0ZGRkZGRiIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iNDQiIHI9IjUiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNMjIgMjRoMjBNMjIgMjR2NmExMCAxMCAwIDAgMCAxMCAxME00MiAyNHY2YTEwIDEwIDAgMCAxLTEwIDEwIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMy41IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIxIDI0bDIgMiA0LTQiIHN0cm9rZT0iIzIwODhGRiIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiLz48L3N2Zz4=;" vertex="1" parent="1">
+          <mxGeometry x="380" y="325" width="65" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_gh_gha" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2;" edge="1" parent="1" source="node_github" target="node_gh_actions_icon">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== GITHUB ACTIONS CI/CD BOX ==================== -->
+        <mxCell id="box_cicd" value="&lt;b style=&quot;font-size:13px;&quot;&gt;GitHub Actions CI/CD&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:10px;&quot;&gt;Workload Identity Federation (WIF)&lt;/font&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;rounded=1;arcSize=10;startSize=36;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="490" y="270" width="220" height="260" as="geometry" />
+        </mxCell>
+
+        <!-- CI Tool: Gitleaks -->
+        <mxCell id="tool_gitleaks" value="&lt;b style=&quot;font-size:11px;&quot;&gt;Gitleaks&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:9px;&quot;&gt;Secret Scan&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiMwMjg0QzciLz48cGF0aCBkPSJNMzIgMTRjLTcgMC0xNCA0LTE2IDExIDQgMSA4IDEgMTItMSA0IDcgMTEgMTEgMjAgOSAyLTcgMS0xMy00LTE3LTQtMS04LTItMTItMnoiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSIyOCIgY3k9IjI2IiByPSIyLjUiIGZpbGw9IiMwMjg0QzciLz48Y2lyY2xlIGN4PSI0MCIgY3k9IjI2IiByPSIyLjUiIGZpbGw9IiMwMjg0QzciLz48cGF0aCBkPSJNMjQgMzhjNCA0IDEyIDQgMTYgMCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIi8+PC9zdmc+;" vertex="1" parent="box_cicd">
+          <mxGeometry x="25" y="45" width="40" height="40" as="geometry" />
+        </mxCell>
+        <!-- CI Tool: Hadolint -->
+        <mxCell id="tool_hadolint" value="&lt;b style=&quot;font-size:11px;&quot;&gt;Hadolint&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:9px;&quot;&gt;Dockerfile Lint&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiM0NzU1NjkiLz48cGF0aCBkPSJNMjAgMThoMTZsMTAgMTB2MjBhMiAyIDAgMCAxLTIgMkgyMGEyIDIgMCAwIDEtMi0yVjIwYTIgMiAwIDAgMSAyLTJ6IiBmaWxsPSIjRkZGRkZGIi8+PHBhdGggZD0iTTM2IDE4djEwaDEwIiBmaWxsPSIjQ0JENUUxIi8+PHBhdGggZD0iTTI2IDM0bDMgMyA4LTgiIHN0cm9rZT0iIzA1OTY2OSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==;" vertex="1" parent="box_cicd">
+          <mxGeometry x="135" y="45" width="40" height="40" as="geometry" />
+        </mxCell>
+        <!-- CI Tool: SonarCloud -->
+        <mxCell id="tool_sonar" value="&lt;b style=&quot;font-size:11px;&quot;&gt;SonarCloud&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:9px;&quot;&gt;SAST Gate&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiNGMzcwMkEiLz48cGF0aCBkPSJNMTggMzZjMi04IDEwLTEyIDE4LTEwIDQgMSA4IDQgMTAgOCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0yNCA0MmMzLTQgOC02IDEzLTQgMiAxIDQgMyA1IDUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIzIiBmaWxsPSIjRkZGRkZGIi8+PC9zdmc+;" vertex="1" parent="box_cicd">
+          <mxGeometry x="25" y="150" width="40" height="40" as="geometry" />
+        </mxCell>
+        <!-- CI Tool: Trivy -->
+        <mxCell id="tool_trivy" value="&lt;b style=&quot;font-size:11px;&quot;&gt;Trivy&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:9px;&quot;&gt;CVE Scan&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiMxRTI5M0IiLz48cGF0aCBkPSJNMzIgMTRsMTYgOHYxNGMwIDEwLTggMTYtMTYgMTgtOC0yLTE2LTgtMTYtMThWMjJ6IiBmaWxsPSIjMzhCREY4Ii8+PHBhdGggZD0iTTMyIDIwdjI0TTI0IDI4bDE2IDhNNDAgMjhsLTE2IDgiIHN0cm9rZT0iIzBGMTcyQSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+PC9zdmc+;" vertex="1" parent="box_cicd">
+          <mxGeometry x="135" y="150" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== ARTIFACT REGISTRY ==================== -->
+        <mxCell id="node_artifact_reg" value="&lt;b style=&quot;font-size:13px;&quot;&gt;GCP Artifact Registry&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px;&quot;&gt;boutique-containers-dev&lt;br&gt;(Cosign Signed Images)&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBhdGggZD0iTTMyIDhsMTggMTB2MjBMMzIgNDggMTQgMzhWMTh6IiBmaWxsPSIjNDI4NUY0Ii8+PHBhdGggZD0iTTMyIDh2MjBsMTggMTBNMzIgMjhMMTQgMTgiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIyLjUiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMjMgMjNsOSA1IDktNU0zMiAzOHYxMCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz48L3N2Zz4=;" vertex="1" parent="1">
+          <mxGeometry x="640" y="80" width="65" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_ci_registry" value="Built Docker Image" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2;fontColor=#0F172A;fontSize=11;fontStyle=1;" edge="1" parent="1" source="node_gh_actions_icon" target="node_artifact_reg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="412" y="112" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ==================== ARGO CD (GITOPS) ==================== -->
+        <mxCell id="node_argocd" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Argo CD&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#DC2626&quot; style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;(GitOps)&lt;/b&gt;&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iI0NCRDVFMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGVsbGlwc2UgY3g9IjMyIiBjeT0iMzAiIHJ4PSIxNCIgcnk9IjE2IiBmaWxsPSIjRUY0NDQ0Ii8+PGNpcmNsZSBjeD0iMjciIGN5PSIyNyIgcj0iMyIgZmlsbD0iI0ZGRkZGRiIvPjxjaXJjbGUgY3g9IjM3IiBjeT0iMjciIHI9IjMiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSIyNyIgY3k9IjI3IiByPSIxLjUiIGZpbGw9IiMwMDAwMDAiLz48Y2lyY2xlIGN4PSIzNyIgY3k9IjI3IiByPSIxLjUiIGZpbGw9IiMwMDAwMDAiLz48cGF0aCBkPSJNMjYgMzVjMyAzIDkgMyAxMiAwIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0yMiA0MmMtMiA2LTYgOC04IDZzMS02IDQtOG04IDJjLTEgNi0zIDktNSA5cy0xLTUgMi05bTEwIDBjMSA2IDMgOSA1IDlzMS01LTItOW00LTJjMiA2IDYgOCA4IDZzLTEtNi00LTgiIHN0cm9rZT0iI0VGNDQ0NCIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xNiAyOGMtMyAwLTUtMi01LTVzMi01IDUtNW0zMiAxMGMzIDAgNS0yIDUtNXMtMi01LTUtNSIgc3Ryb2tlPSIjOTRBM0I4IiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiLz48L3N2Zz4=;" vertex="1" parent="1">
+          <mxGeometry x="560" y="600" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_gh_argo" value="Pull Manifests" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2;fontColor=#0F172A;fontSize=11;fontStyle=1;" edge="1" parent="1" source="node_gh_actions_icon" target="node_argocd">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="412" y="640" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ==================== GKE CLUSTER BOUNDARY ==================== -->
+        <mxCell id="box_gke_cluster" value="&lt;b style=&quot;font-size:16px;&quot;&gt;Google Kubernetes Engine (GKE)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px;&quot;&gt;Private VPC-Native Cluster • us-central1-a&lt;/font&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0F172A;fontColor=#0F172A;rounded=1;arcSize=8;startSize=55;strokeWidth=2.5;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="140" width="400" height="660" as="geometry" />
+        </mxCell>
+
+        <!-- GCP Logo Top Inside GKE -->
+        <mxCell id="logo_gcp" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBhdGggZD0iTTQxIDQyaDdhOCA4IDAgMCAwIDItMTUgMTMgMTMgMCAwIDAtMjUtMyAxMCAxMCAwIDAgMC05IDEwIDggOCAwIDAgMCA4IDhoMTciIGZpbGw9IiM0Mjg1RjQiLz48cGF0aCBkPSJNNDggMzhhNiA2IDAgMCAwIDAtMTIgMTEgMTEgMCAwIDAtMjAtNCIgc3Ryb2tlPSIjRUE0MzM1IiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMjggMjJhMTAgMTAgMCAwIDAtOCAxMCA2IDYgMCAwIDAgNiA2aDE1IiBzdHJva2U9IiNGQkJDMDUiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik00MSAzOGg3YTYgNiAwIDAgMCAwLTEyIiBzdHJva2U9IiMzNEE4NTMiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==;" vertex="1" parent="box_gke_cluster">
+          <mxGeometry x="175" y="8" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Namespace 1: boutique-dev -->
+        <mxCell id="box_ns_boutique" value="&lt;b style=&quot;font-size:13px;&quot;&gt;boutique-dev&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#0F172A;fontColor=#0F172A;rounded=1;arcSize=8;startSize=30;strokeWidth=1.5;" vertex="1" parent="box_gke_cluster">
+          <mxGeometry x="25" y="70" width="350" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="icon_pod" value="&lt;b style=&quot;font-size:11px;&quot;&gt;pod&lt;/b&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBvbHlnb24gcG9pbnRzPSIzMiw4IDUyLDIwIDUyLDQ0IDMyLDU2IDEyLDQ0IDEyLDIwIiBmaWxsPSIjMzI2Q0U1Ii8+PHRleHQgeD0iMzIiIHk9IjM2IiBmaWxsPSIjRkZGIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPnBvZDwvdGV4dD48L3N2Zz4=;" vertex="1" parent="box_ns_boutique">
+          <mxGeometry x="40" y="45" width="45" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="icon_services" value="&lt;b style=&quot;font-size:11px;&quot;&gt;microservices&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:9px;&quot;&gt;12 Polyglot Services&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBvbHlnb24gcG9pbnRzPSIzMiw2IDU2LDIwIDU2LDQ0IDMyLDU4IDgsNDQgOCwyMCIgZmlsbD0iIzMyNkNFNSIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMzIiIHI9IjE0IiBmaWxsPSIjRkZGRkZGIi8+PHBvbHlnb24gcG9pbnRzPSIzMiwyMiA0MCwyNyA0MCwzNyAzMiw0MiAyNCwzNyAyNCwyNyIgZmlsbD0iIzMyNkNFNSIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMzIiIHI9IjQiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=;" vertex="1" parent="box_ns_boutique">
+          <mxGeometry x="230" y="45" width="45" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Namespace 2: argocd -->
+        <mxCell id="box_ns_argocd" value="&lt;b style=&quot;font-size:13px;&quot;&gt;argocd&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#0F172A;fontColor=#0F172A;rounded=1;arcSize=8;startSize=30;strokeWidth=1.5;" vertex="1" parent="box_gke_cluster">
+          <mxGeometry x="25" y="250" width="350" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="icon_argo_in_ns" value="&lt;b style=&quot;font-size:12px;&quot;&gt;Argo CD&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:10px;&quot;&gt;Server &amp;amp; Controllers&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iI0NCRDVFMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGVsbGlwc2UgY3g9IjMyIiBjeT0iMzAiIHJ4PSIxNCIgcnk9IjE2IiBmaWxsPSIjRUY0NDQ0Ii8+PGNpcmNsZSBjeD0iMjciIGN5PSIyNyIgcj0iMyIgZmlsbD0iI0ZGRkZGRiIvPjxjaXJjbGUgY3g9IjM3IiBjeT0iMjciIHI9IjMiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSIyNyIgY3k9IjI3IiByPSIxLjUiIGZpbGw9IiMwMDAwMDAiLz48Y2lyY2xlIGN4PSIzNyIgY3k9IjI3IiByPSIxLjUiIGZpbGw9IiMwMDAwMDAiLz48cGF0aCBkPSJNMjYgMzVjMyAzIDkgMyAxMiAwIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0yMiA0MmMtMiA2LTYgOC04IDZzMS02IDQtOG04IDJjLTEgNi0zIDktNSA5cy0xLTUgMi05bTEwIDBjMSA2IDMgOSA1IDlzMS01LTItOW00LTJjMiA2IDYgOCA4IDZzLTEtNi00LTgiIHN0cm9rZT0iI0VGNDQ0NCIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xNiAyOGMtMyAwLTUtMi01LTVzMi01IDUtNW0zMiAxMGMzIDAgNS0yIDUtNXMtMi01LTUtNSIgc3Ryb2tlPSIjOTRBM0I4IiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiLz48L3N2Zz4=;" vertex="1" parent="box_ns_argocd">
+          <mxGeometry x="150" y="45" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Namespace 3: headlamp -->
+        <mxCell id="box_ns_headlamp" value="&lt;b style=&quot;font-size:13px;&quot;&gt;headlamp&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#0F172A;fontColor=#0F172A;rounded=1;arcSize=8;startSize=30;strokeWidth=1.5;" vertex="1" parent="box_gke_cluster">
+          <mxGeometry x="25" y="420" width="350" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="icon_headlamp_in_ns" value="&lt;b style=&quot;font-size:13px;&quot;&gt;Headlamp&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:10px;&quot;&gt;Kubernetes dashboard&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjgiIGZpbGw9IiMwMjg0QzciLz48cG9seWdvbiBwb2ludHM9IjMyLDEyIDM2LDI0IDQ4LDI0IDM4LDMyIDQyLDQ0IDMyLDM2IDIyLDQ0IDI2LDMyIDE2LDI0IDI4LDI0IiBmaWxsPSIjRkZGRkZGIi8+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iNiIgZmlsbD0iIzAyODRDNyIvPjwvc3ZnPg==;" vertex="1" parent="box_ns_headlamp">
+          <mxGeometry x="145" y="45" width="55" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Connector Argo CD -> GKE Cluster -->
+        <mxCell id="edge_argo_gke" value="Continuously deploy" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2;fontColor=#0F172A;fontSize=11;fontStyle=1;" edge="1" parent="1" source="node_argocd" target="box_ns_argocd">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_argo_boutique" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2;" edge="1" parent="1" source="node_argocd" target="box_ns_boutique">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="640" />
+              <mxPoint x="750" y="285" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_argo_headlamp" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2;" edge="1" parent="1" source="node_argocd" target="box_ns_headlamp">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="640" />
+              <mxPoint x="750" y="635" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ==================== TOP RIGHT: GCLB & MANAGED SSL ==================== -->
+        <mxCell id="node_gclb" value="&lt;b style=&quot;font-size:12px;&quot;&gt;Google Cloud HTTP(S)&lt;br&gt;Load Balancer&lt;/b&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiMwMjg0QzciLz48cGF0aCBkPSJNMzIgMTJ2MTJtLTE2IDEydjE2bTMyLTE2djE2TTE2IDI0aDMyIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHJlY3QgeD0iMjYiIHk9IjgiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxMCIgeT0iNDYiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSI0MiIgeT0iNDYiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="40" width="55" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="node_ssl_cert" value="&lt;b style=&quot;font-size:12px;&quot;&gt;Google-managed&lt;br&gt;SSL Certificates&lt;/b&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiNGNTlFMEIiLz48cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSIzNiIgaGVpZ2h0PSIyNiIgcng9IjMiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjQwIiByPSI4IiBmaWxsPSIjRDk3NzA2Ii8+PHBhdGggZD0iTTI5IDQ2bC0zIDggNi0zIDYgMy0zLTgiIGZpbGw9IiNCNDUzMDkiLz48cGF0aCBkPSJNMjIgMjJoMjBNMjIgMjhoMTIiIHN0cm9rZT0iI0Q5NzcwNiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4=;" vertex="1" parent="1">
+          <mxGeometry x="1500" y="40" width="55" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== RIGHT DESTINATION 1: PUBLIC USERS ==================== -->
+        <mxCell id="dest_public_users" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Public Users /&lt;br&gt;Customers&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#16A34A&quot; style=&quot;font-size:11px;&quot;&gt;https://dev.devopsstandard.name.ng&lt;/font&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiMxNkEzNEEiLz48Y2lyY2xlIGN4PSIyNiIgY3k9IjI0IiByPSI3IiBmaWxsPSIjRkZGRkZGIi8+PHBhdGggZD0iTTE0IDQyYzAtNiA2LTkgMTItOXMxMiAzIDEyIDkiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSI0MiIgY3k9IjIyIiByPSI1IiBmaWxsPSIjQkJGN0QwIi8+PHBhdGggZD0iTTM0IDM4YzEtNCA0LTYgOC02czggMiA4IDYiIGZpbGw9IiNCQkY3RDAiLz48L3N2Zz4=;" vertex="1" parent="1">
+          <mxGeometry x="1570" y="240" width="70" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Route: boutique-dev -> Public Users -->
+        <mxCell id="edge_boutique_users" value="dev.devopsstandard.name.ng" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2.5;fontColor=#0F172A;fontSize=12;fontStyle=1;" edge="1" parent="1" source="box_ns_boutique" target="dest_public_users">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== RIGHT DESTINATION 2: DEVOPS ENGINEER PC ==================== -->
+        <!-- Ingress GCLB mini box for Admin -->
+        <mxCell id="box_admin_gclb" value="&lt;b style=&quot;font-size:11px;&quot;&gt;Google Cloud HTTP(S)&lt;br&gt;Load Balancer&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0F172A;fontColor=#0F172A;rounded=1;arcSize=8;startSize=22;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="550" width="130" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="icon_admin_gclb" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiMwMjg0QzciLz48cGF0aCBkPSJNMzIgMTJ2MTJtLTE2IDEydjE2bTMyLTE2djE2TTE2IDI0aDMyIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHJlY3QgeD0iMjYiIHk9IjgiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxMCIgeT0iNDYiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSI0MiIgeT0iNDYiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=;" vertex="1" parent="box_admin_gclb">
+          <mxGeometry x="45" y="40" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- DevOps Engineer PC Destination -->
+        <mxCell id="dest_devops_pc" value="&lt;b style=&quot;font-size:14px;&quot;&gt;DevOps Engineer PC&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#0284C7&quot; style=&quot;font-size:11px;&quot;&gt;GitOps &amp;amp; Cluster Management&lt;/font&gt;&lt;br&gt;&lt;i style=&quot;font-size:10px;color:#64748B;&quot;&gt;argocd &amp;amp; headlamp endpoints&lt;/i&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=1;aspect=fixed;image=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiMwMjg0QzciLz48cmVjdCB4PSIxMiIgeT0iMTQiIHdpZHRoPSI0MCIgaGVpZ2h0PSIyNiIgcng9IjIiIGZpbGw9IiMwRjE3MkEiLz48cmVjdCB4PSIxNiIgeT0iMTgiIHdpZHRoPSIzMiIgaGVpZ2h0PSIxOCIgZmlsbD0iIzM4QkRGOCIvPjxwYXRoIGQ9Ik0yMiAyNGwtMyAzIDMgM20xMC02bDMgMy0zIDNtLTQtNmwtMiA2IiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNOCA0NGg0OGwtNCA2SDEyeiIgZmlsbD0iI0NCRDVFMSIvPjxwYXRoIGQ9Ik0yOCA0NGg4djJoLTh6IiBmaWxsPSIjOTRBM0I4Ii8+PC9zdmc+;" vertex="1" parent="1">
+          <mxGeometry x="1570" y="570" width="75" height="75" as="geometry" />
+        </mxCell>
+
+        <!-- Route: argocd & headlamp -> Admin GCLB -> DevOps PC -->
+        <mxCell id="edge_argocd_admin" value="argocd.devopsstandard.name.ng" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.3;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2.5;fontColor=#0F172A;fontSize=12;fontStyle=1;" edge="1" parent="1" source="box_ns_argocd" target="dest_devops_pc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1270" y="460" />
+              <mxPoint x="1270" y="590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_headlamp_admin" value="headlamp.devopsstandard.name.ng" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.7;entryDx=0;entryDy=0;strokeColor=#0F172A;strokeWidth=2.5;fontColor=#0F172A;fontSize=12;fontStyle=1;" edge="1" parent="1" source="box_ns_headlamp" target="dest_devops_pc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1270" y="635" />
+              <mxPoint x="1270" y="625" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

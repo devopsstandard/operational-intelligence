@@ -1,0 +1,86 @@
+# Production Robusta OSS Helm Values for Operational Intelligence Platform
+clusterName: "gke-us-central1-prod-01"
+isSmallCluster: true
+
+# 1. Runner Pod Configuration & Workload Identity
+runner:
+  sendAdditionalTelemetry: false
+  serviceAccount:
+    create: true
+    name: "robusta-runner-service-account"
+    annotations:
+      iam.gke.io/gcp-service-account: "robusta-runner-prod@PROJECT_ID.iam.gserviceaccount.com"
+  
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+
+  nodeSelector:
+    iam.gke.io/gke-metadata-server-enabled: "true"
+
+# 2. Scoped RBAC Permissions (SOW Blast Radius Isolation)
+# Strictly scoped to reading logs, describing pods, and restarting target consumer deployments
+rbac:
+  create: true
+
+# 3. Global Platform Context
+globalConfig:
+  cluster_name: "gke-us-central1-prod-01"
+  signing_key: "robusta-oss-internal"
+  account_id: "operational-intelligence"
+  gcp_project: "PROJECT_ID"
+  gemini_model: "gemini-1.5-flash"
+  bq_dataset: "ops_analytics_prod"
+  slack_channel: "ops-triage"
+
+# 4. Sinks: Slack ChatOps & BigQuery Immutable Audit
+sinksConfig:
+  - slack_sink:
+      name: slack_triage
+      slack_channel: "ops-triage"
+      api_key: "${SLACK_BOT_TOKEN}"
+      notify_on_eval: true
+
+# 5. Playbooks Configuration for Top 3 SOW Failure Modes (< 5 min MTTR)
+customPlaybooks:
+  # Failure Mode 1: Deadlocked / Stalled Consumer (emailservice / consumer-triage)
+  - triggers:
+      - on_prometheus_alert:
+          alert_name: "ConsumerTriageStalled"
+      - on_prometheus_alert:
+          alert_name: "OldestUnackedMessageAgeHigh"
+    actions:
+      - robusta_playbooks.stalled_consumer_playbook:
+          target_deployment: "emailservice"
+          target_namespace: "boutique-dev"
+          max_stalled_seconds: 120
+          auto_restart_safe: true
+
+  # Failure Mode 2: Pub/Sub DLQ Backpressure & Poison Pills
+  - triggers:
+      - on_prometheus_alert:
+          alert_name: "PubSubDLQBackpressure"
+      - on_prometheus_alert:
+          alert_name: "DeadLetterQueueSurge"
+    actions:
+      - robusta_playbooks.dlq_poison_pill_playbook:
+          target_subscription: "consumer-triage-dlq-sub"
+          quarantine_bucket: "gs://ops-quarantine-prod"
+          backoff_cooldown_seconds: 60
+
+  # Failure Mode 3: Ephemeral Vertex AI 429 Quota Throttling
+  - triggers:
+      - on_prometheus_alert:
+          alert_name: "VertexAIQuotaExhausted"
+      - on_prometheus_alert:
+          alert_name: "RateLimit429Surge"
+    actions:
+      - robusta_playbooks.vertex_quota_backoff_playbook:
+          target_deployment: "paymentservice"
+          target_namespace: "boutique-dev"
+          cooldown_window_seconds: 180
+          scale_down_step: 1

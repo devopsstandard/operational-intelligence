@@ -1,0 +1,30 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: argocd-server-cert-v2
+  namespace: argocd
+spec:
+  domains:
+    - argocd.devopsstandard.name.ng
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "boutique-argocd-ip-dev"
+    networking.gke.io/managed-certificates: "argocd-server-cert-v2"
+spec:
+  rules:
+  - host: argocd.devopsstandard.name.ng
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: argo-cd-argocd-server
+            port:
+              number: 80

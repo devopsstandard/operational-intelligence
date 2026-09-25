@@ -1,0 +1,46 @@
+﻿name: Microservices Build & GitOps Rollout
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - 'src/**'
+      - 'k8s/**'
+      - '.github/workflows/build-and-gitops.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  GCP_REGION: us-central1
+
+jobs:
+  validate-k8s:
+    name: Validate Kustomize Overlays
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Dev Overlay
+        run: kubectl kustomize k8s/overlays/dev > /dev/null
+
+      - name: Validate Prod Overlay
+        run: kubectl kustomize k8s/overlays/prod > /dev/null
+
+  gitops-sync-notify:
+    name: GitOps Sync Notification
+    needs: [validate-k8s]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Output GitOps Sync Target
+        run: |
+          ENV_NAME="${{ github.ref_name == 'main' && 'prod' || 'dev' }}"
+          echo "==> Changes detected for environment: ${ENV_NAME}"
+          echo "==> Target overlay: k8s/overlays/${ENV_NAME}"
+          echo "==> Argo CD will automatically detect this commit and reconcile changes."

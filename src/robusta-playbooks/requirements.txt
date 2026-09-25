@@ -1,0 +1,4 @@
+robusta-sdk>=0.10.0
+google-cloud-bigquery>=3.14.0
+google-cloud-aiplatform>=1.38.0
+vertexai>=1.38.0

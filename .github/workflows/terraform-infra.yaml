@@ -1,0 +1,137 @@
+name: Terraform Infrastructure Pipeline
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform-infra.yaml'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform Action to perform'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  GCP_REGION: us-central1
+
+jobs:
+  terraform-run:
+    name: Terraform Provisioning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure Dynamic Environment Context
+        run: |
+          PROJ_ID="${{ secrets.GCP_PROJECT_ID }}"
+          if [ -z "$PROJ_ID" ]; then
+            echo "::error::Secret GCP_PROJECT_ID is not configured in GitHub Repository Secrets!"
+            exit 1
+          fi
+          echo "GCP_PROJECT=${PROJ_ID}" >> $GITHUB_ENV
+
+          PROJ_NUM="${{ secrets.GCP_PROJECT_NUMBER }}"
+          echo "GCP_PROJECT_NUMBER=${PROJ_NUM}" >> $GITHUB_ENV
+
+          ENV_NAME="${{ github.ref_name == 'main' && 'prod' || 'dev' }}"
+          echo "ENV_NAME=${ENV_NAME}" >> $GITHUB_ENV
+          echo "GKE_CLUSTER=boutique-gke-cluster-${ENV_NAME}" >> $GITHUB_ENV
+          
+          if [ -n "$PROJ_NUM" ]; then
+            echo "WIF_PROVIDER=projects/${PROJ_NUM}/locations/global/workloadIdentityPools/github-actions-pool-${ENV_NAME}/providers/github-actions-provider" >> $GITHUB_ENV
+            echo "WIF_SERVICE_ACCOUNT=boutique-cicd-sa-${ENV_NAME}@${PROJ_ID}.iam.gserviceaccount.com" >> $GITHUB_ENV
+          fi
+
+      - name: Authenticate to GCP (WIF with SA Key Bootstrap Fallback)
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ secrets.GCP_SA_KEY == '' && env.WIF_PROVIDER || '' }}
+          service_account: ${{ secrets.GCP_SA_KEY == '' && env.WIF_SERVICE_ACCOUNT || '' }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      - name: Terraform Init & Run
+        run: |
+          ACTION="${{ github.event.inputs.action || 'plan' }}"
+          echo "==> Running Terraform ${ACTION} for environment: ${ENV_NAME}"
+          cd terraform/environments/${ENV_NAME}
+
+          STATE_BUCKET="${GCP_PROJECT}-tfstate"
+          echo "==> Ensuring GCS state bucket gs://${STATE_BUCKET} exists..."
+          gcloud storage buckets create "gs://${STATE_BUCKET}" --project="${GCP_PROJECT}" --location="${GCP_REGION}" --uniform-bucket-level-access 2>/dev/null || true
+
+          if [ -f "imports.tf" ]; then
+            echo "==> Configuring declarative import IDs for ${GCP_PROJECT}..."
+            sed -i "s/__PROJECT_ID__/${GCP_PROJECT}/g" imports.tf
+            sed -i "s/__REGION__/${GCP_REGION}/g" imports.tf
+          fi
+
+          terraform init -backend-config="bucket=${STATE_BUCKET}" -reconfigure -input=false
+
+          VAR_FLAGS="-var=project_id=${GCP_PROJECT} -var=region=${GCP_REGION} -var=github_repo=${GITHUB_REPOSITORY}"
+          PAT_TOKEN="${{ secrets.ARGOCD_GITHUB_TOKEN || secrets.GH_PAT_TOKEN || secrets.PAT_TOKEN }}"
+          if [ -n "$PAT_TOKEN" ]; then
+            VAR_FLAGS="${VAR_FLAGS} -var=github_pat_token=${PAT_TOKEN}"
+          fi
+
+          if [ "$ACTION" == "destroy" ]; then
+            echo "==> Triggering TERRAFORM DESTROY..."
+            terraform destroy -input=false -auto-approve $VAR_FLAGS
+          elif [ "$ACTION" == "apply" ]; then
+            echo "==> Triggering TERRAFORM APPLY..."
+            terraform apply -input=false -auto-approve $VAR_FLAGS
+          else
+            echo "==> Triggering TERRAFORM PLAN (Dry Run)..."
+            terraform plan -input=false $VAR_FLAGS
+          fi
+
+      - name: Get GKE Credentials
+        if: ${{ (github.event.inputs.action || 'plan') == 'apply' }}
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GCP_REGION }}-a
+
+      - name: Bootstrap GitOps & Ingress on GKE
+        if: ${{ (github.event.inputs.action || 'plan') == 'apply' }}
+        env:
+          PAT_TOKEN: ${{ secrets.ARGOCD_GITHUB_TOKEN || secrets.GH_PAT_TOKEN || secrets.PAT_TOKEN }}
+        run: |
+          if [ -n "$PAT_TOKEN" ]; then
+            echo "==> Configuring Argo CD private repo secret..."
+            kubectl create secret generic repo-marketplace-microservices \
+              -n argocd \
+              --from-literal=type=git \
+              --from-literal=url="https://github.com/${GITHUB_REPOSITORY}.git" \
+              --from-literal=username="devopsstandard" \
+              --from-literal=password="$PAT_TOKEN" \
+              --dry-run=client -o yaml | kubectl apply -f -
+            kubectl label secret repo-marketplace-microservices -n argocd "argocd.argoproj.io/secret-type=repository" --overwrite
+          fi
+
+          echo "==> Deploying Headlamp Dashboard..."
+          kubectl apply -f k8s/headlamp/headlamp.yaml
+          echo "==> Deploying Argo CD Ingress..."
+          kubectl apply -f k8s/argocd-ingress/argocd-ingress.yaml
+          echo "==> Deploying Argo CD Application for ${ENV_NAME}..."
+          kubectl apply -f gitops/argocd-apps/${ENV_NAME}-application.yaml
+          echo "==> GitOps bootstrap complete! Argo CD is now actively managing ${ENV_NAME}."
+
+

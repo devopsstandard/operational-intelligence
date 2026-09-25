@@ -1,0 +1,62 @@
+<!--
+ Copyright 2026 OmniPulse Market
+ Customer Order Confirmation Receipt
+-->
+{{ define "order" }}
+    {{ template "header" . }}
+
+    <main role="main" class="omni-order-complete py-5" style="background-color: #f8fafc; min-height: 80vh;">
+        <div class="container" style="max-width: 680px;">
+            <div class="bg-white rounded-lg border shadow-sm p-4 p-md-5 text-center" style="border-radius: 20px;">
+                <div style="font-size: 56px;" class="mb-3">🎉</div>
+                <h2 class="font-weight-extrabold text-dark mb-2">Thank you for your order!</h2>
+                <p class="text-muted mb-4">We've sent an order confirmation and electronic receipt to your email.</p>
+
+                <!-- Order Receipt Card -->
+                <div class="bg-light rounded p-4 text-left border mb-4">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted font-weight-bold">Order Confirmation:</span>
+                        <strong class="text-dark font-monospace">{{ .order.OrderId }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted font-weight-bold">Tracking Number:</span>
+                        <strong class="text-primary font-monospace">{{ .order.ShippingTrackingId }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted font-weight-bold">Delivery Method:</span>
+                        <span class="text-dark">Express Ground (Estimated 2-3 Days)</span>
+                    </div>
+                    <div class="d-flex justify-content-between pt-3">
+                        <span class="text-dark font-weight-bold" style="font-size: 16px;">Total Paid:</span>
+                        <strong class="text-success" style="font-size: 20px;">{{ renderMoney .total_paid }}</strong>
+                    </div>
+                </div>
+
+                <!-- Live Delivery Progress -->
+                <div class="p-3 rounded border text-left mb-4 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small font-weight-bold text-dark">📦 Live Fulfillment Status</span>
+                        <span class="badge badge-success px-2 py-1">Order Confirmed</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 6px; border-radius: 9999px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted" style="font-size: 11px;">
+                        <span class="font-weight-bold text-success">✓ Order Received</span>
+                        <span>Warehouse Packing</span>
+                        <span>Out for Delivery</span>
+                        <span>Delivered</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ $.baseUrl }}/" class="btn omni-btn-primary rounded-pill px-4 py-2 font-weight-bold">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {{ template "footer" . }}
+{{ end }}

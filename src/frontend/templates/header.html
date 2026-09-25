@@ -1,0 +1,654 @@
+<!--
+ Copyright 2026 OmniPulse Market
+ Modern Customer-Facing E-Commerce Storefront with Interactive Cart Drawer
+-->
+{{ define "header" }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>OmniPulse Market | Modern Lifestyle Essentials & Everyday Gear</title>
+    
+    <!-- Modern Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ $.baseUrl }}/static/styles/styles.css">
+    <link rel="stylesheet" type="text/css" href="{{ $.baseUrl }}/static/styles/cart.css">
+    <link rel="stylesheet" type="text/css" href="{{ $.baseUrl }}/static/styles/order.css">
+    <link rel="stylesheet" type="text/css" href="{{ $.baseUrl }}/static/styles/bot.css">
+    <link rel='shortcut icon' type='image/x-icon' href='{{ $.baseUrl }}/static/favicon.ico' />
+
+    <style>
+        :root {
+            --omni-navy: #0f172a;
+            --omni-blue: #2563eb;
+            --omni-blue-hover: #1d4ed8;
+            --omni-light-bg: #f8fafc;
+            --omni-card-border: #e2e8f0;
+            --omni-text-dark: #0f172a;
+            --omni-text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif !important;
+            color: var(--omni-text-dark);
+            background-color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Clean Warm Announcement Bar */
+        .omni-store-announcement {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 9px 0;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+
+        .omni-store-announcement a {
+            color: #93c5fd;
+            text-decoration: underline;
+            margin-left: 6px;
+        }
+
+        /* Clean Sticky Navbar */
+        .omni-navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .omni-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none !important;
+        }
+
+        .omni-logo-badge {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+        }
+
+        .omni-brand-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+            color: #0f172a;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .omni-brand-subtitle {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: #2563eb;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+        }
+
+        .omni-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            margin-left: 40px;
+        }
+
+        .omni-nav-link {
+            color: #475569;
+            font-size: 14.5px;
+            font-weight: 600;
+            text-decoration: none !important;
+            transition: color 0.2s ease;
+        }
+
+        .omni-nav-link:hover {
+            color: #2563eb;
+        }
+
+        .omni-right-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* Currency Selector */
+        .omni-currency-picker {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .omni-currency-select {
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Auth Buttons */
+        .omni-auth-btn-login {
+            color: #0f172a;
+            background: transparent;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none !important;
+        }
+
+        .omni-auth-btn-login:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+        }
+
+        .omni-auth-btn-register {
+            background: #0f172a;
+            color: #ffffff !important;
+            font-size: 13.5px;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 9999px;
+            border: 1px solid #0f172a;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none !important;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+        }
+
+        .omni-auth-btn-register:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+
+        .omni-user-greeting {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .omni-user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #dbeafe;
+            color: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Cart Trigger Button */
+        .omni-cart-btn {
+            position: relative;
+            background: #f8fafc;
+            color: #0f172a !important;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+            font-size: 13.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .omni-cart-btn:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+            transform: translateY(-1px);
+        }
+
+        .omni-cart-badge {
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 9999px;
+        }
+
+        /* ===================================== */
+        /* SLIDE-OUT CART DRAWER STYLES          */
+        /* ===================================== */
+        .omni-drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .omni-drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .omni-cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 100%;
+            max-width: 440px;
+            height: 100vh;
+            background: #ffffff;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+            z-index: 2001;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .omni-cart-drawer.active {
+            right: 0;
+        }
+
+        .omni-drawer-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .omni-drawer-body {
+            padding: 20px 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .omni-drawer-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .omni-drawer-item {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .omni-drawer-item-img {
+            width: 65px;
+            height: 65px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #f1f5f9;
+        }
+
+        .omni-qty-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .omni-qty-btn:hover {
+            background: #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Customer-Facing Announcement Strip -->
+    <div class="omni-store-announcement">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <span>✨ <strong>Complimentary Express Shipping</strong> on all domestic orders over $50</span>
+            </div>
+            <div class="d-none d-md-flex align-items-center gap-3">
+                <span class="text-white-50">Free 30-Day Returns</span>
+                <span class="text-white-50">•</span>
+                <a href="#order-lookup">Track Your Order</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="omni-navbar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <a href="{{ $.baseUrl }}/" class="omni-brand-logo">
+                    <div class="omni-logo-badge">⚡</div>
+                    <div>
+                        <div class="omni-brand-title">OmniPulse</div>
+                        <div class="omni-brand-subtitle">Everyday Essentials</div>
+                    </div>
+                </a>
+
+                <nav class="omni-nav-links d-none d-lg-flex">
+                    <a href="{{ $.baseUrl }}/#products-grid" class="omni-nav-link">Shop Catalog</a>
+                    <a href="{{ $.baseUrl }}/#order-lookup" class="omni-nav-link">Track Order</a>
+                    <a href="{{ $.baseUrl }}/cart" class="omni-nav-link">Checkout Page</a>
+                </nav>
+            </div>
+
+            <div class="omni-right-controls">
+                {{ if $.show_currency }}
+                <div class="omni-currency-picker">
+                    <span>{{ renderCurrencyLogo $.user_currency }}</span>
+                    <form method="POST" action="{{ $.baseUrl }}/setCurrency" id="currency_form" class="m-0">
+                        <select name="currency_code" class="omni-currency-select" onchange="document.getElementById('currency_form').submit();">
+                            {{range $.currencies}}
+                            <option value="{{.}}" {{if eq . $.user_currency}}selected="selected"{{end}}>{{.}}</option>
+                            {{end}}
+                        </select>
+                    </form>
+                </div>
+                {{ end }}
+
+                <!-- Auth Controls -->
+                <div id="authLoggedOut" class="d-flex align-items-center gap-2">
+                    <button type="button" class="omni-auth-btn-login" onclick="openAuthModal('login')">Sign In</button>
+                    <button type="button" class="omni-auth-btn-register" onclick="openAuthModal('register')">Register</button>
+                </div>
+
+                <div id="authLoggedIn" class="omni-user-greeting">
+                    <div class="omni-user-avatar">A</div>
+                    <span id="userNameDisplay">Alex M.</span>
+                    <button class="btn btn-sm btn-link text-muted p-0 ml-1" onclick="logoutUser()" title="Sign Out">✕</button>
+                </div>
+
+                <!-- Interactive Cart Trigger -->
+                <button type="button" class="omni-cart-btn" onclick="openCartDrawer()">
+                    <span>🛒 Cart</span>
+                    <span id="cartCountBadge" class="omni-cart-badge">{{ if $.cart_size }}{{$.cart_size}}{{ else }}0{{ end }}</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Slide-Out Cart Drawer -->
+    <div id="cartDrawerOverlay" class="omni-drawer-overlay" onclick="closeCartDrawer()"></div>
+    <div id="cartDrawer" class="omni-cart-drawer">
+        <div class="omni-drawer-header">
+            <h5 class="font-weight-bold text-dark m-0 d-flex align-items-center gap-2">
+                <span>🛒 Your Bag</span>
+                <span id="drawerCountTag" class="badge badge-light border text-muted">0 items</span>
+            </h5>
+            <button class="btn btn-sm btn-light rounded-circle font-weight-bold" onclick="closeCartDrawer()">✕</button>
+        </div>
+
+        <div id="drawerBody" class="omni-drawer-body">
+            <!-- Dynamic Items or Empty State injected via JS -->
+            <div id="drawerEmptyState" class="text-center py-5">
+                <div style="font-size: 40px;" class="mb-2">🛍️</div>
+                <h6 class="font-weight-bold text-dark">Your bag is empty</h6>
+                <p class="small text-muted mb-3">Add items from the catalog to see them here.</p>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="closeCartDrawer()">Shop Essentials</button>
+            </div>
+            <div id="drawerItemList" class="d-none"></div>
+        </div>
+
+        <div id="drawerFooter" class="omni-drawer-footer d-none">
+            <div class="d-flex justify-content-between mb-1 small text-muted">
+                <span>Estimated Subtotal</span>
+                <strong id="drawerSubtotal" class="text-dark">$0.00</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-3 small text-muted">
+                <span>Shipping</span>
+                <strong id="drawerShipping" class="text-success">FREE</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-3 pt-2 border-top">
+                <span class="font-weight-bold text-dark">Total</span>
+                <strong id="drawerTotal" class="text-primary font-weight-extrabold" style="font-size: 18px;">$0.00</strong>
+            </div>
+            <a href="{{ $.baseUrl }}/cart" class="btn btn-primary btn-block rounded-pill py-2 font-weight-bold shadow-sm" style="background: #0f172a; border-color: #0f172a;">
+                Proceed to Checkout →
+            </a>
+            <div class="text-center mt-2">
+                <button class="btn btn-sm btn-link text-muted" onclick="clearCart()">Empty Bag</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sleek Customer Auth Modal (Sign In / Register) -->
+    <div class="modal fade" id="omniAuthModal" tabindex="-1" role="dialog" aria-hidden="true" style="backdrop-filter: blur(4px);">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 420px;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <div class="d-flex gap-2">
+                        <button id="tabLoginBtn" class="btn btn-sm font-weight-bold px-3 py-2 text-primary border-bottom border-primary" style="font-size: 15px; border-width: 2px !important;" onclick="switchAuthTab('login')">Sign In</button>
+                        <button id="tabRegisterBtn" class="btn btn-sm font-weight-bold px-3 py-2 text-muted" style="font-size: 15px;" onclick="switchAuthTab('register')">Create Account</button>
+                    </div>
+                    <button type="button" class="close m-0 p-0 text-muted" data-dismiss="modal" aria-label="Close" style="outline: none;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Login Form -->
+                    <form id="loginForm" onsubmit="handleAuthSubmit(event, 'login')">
+                        <div class="form-group mb-3">
+                            <label class="small font-weight-bold text-muted mb-1">Email Address</label>
+                            <input type="email" id="loginEmail" class="form-control rounded-pill px-3" placeholder="name@example.com" value="alex.miller@example.com" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <div class="d-flex justify-content-between">
+                                <label class="small font-weight-bold text-muted mb-1">Password</label>
+                                <a href="#" class="small text-primary">Forgot?</a>
+                            </div>
+                            <input type="password" id="loginPassword" class="form-control rounded-pill px-3" placeholder="••••••••" value="password123" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block rounded-pill py-2 font-weight-bold mt-4 shadow-sm" style="background: #0f172a; border-color: #0f172a;">
+                            Sign In to Account
+                        </button>
+                    </form>
+
+                    <!-- Register Form -->
+                    <form id="registerForm" class="d-none" onsubmit="handleAuthSubmit(event, 'register')">
+                        <div class="form-group mb-3">
+                            <label class="small font-weight-bold text-muted mb-1">Full Name</label>
+                            <input type="text" id="regName" class="form-control rounded-pill px-3" placeholder="Alex Miller" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="small font-weight-bold text-muted mb-1">Email Address</label>
+                            <input type="email" id="regEmail" class="form-control rounded-pill px-3" placeholder="name@example.com" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="small font-weight-bold text-muted mb-1">Create Password</label>
+                            <input type="password" id="regPassword" class="form-control rounded-pill px-3" placeholder="At least 8 characters" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block rounded-pill py-2 font-weight-bold mt-4 shadow-sm" style="background: #2563eb; border-color: #2563eb;">
+                            Join OmniPulse
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted">By continuing, you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client-side Cart State & Drawer Controller -->
+    <script>
+    let localCart = [];
+
+    function openCartDrawer() {
+        fetchCart();
+        document.getElementById('cartDrawerOverlay').classList.add('active');
+        document.getElementById('cartDrawer').classList.add('active');
+    }
+
+    function closeCartDrawer() {
+        document.getElementById('cartDrawerOverlay').classList.remove('active');
+        document.getElementById('cartDrawer').classList.remove('active');
+    }
+
+    async function fetchCart() {
+        try {
+            const res = await fetch('/api/cart');
+            if (res.ok) {
+                const data = await res.json();
+                localCart = data.items || [];
+                renderDrawerUI(data);
+            }
+        } catch (e) {
+            console.error('Failed to fetch cart:', e);
+        }
+    }
+
+    async function addToCart(productId, quantity = 1) {
+        try {
+            const res = await fetch('/api/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: productId, quantity: quantity })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                localCart = data.items || [];
+                renderDrawerUI(data);
+                openCartDrawer();
+                showToast('✓ Added to your bag!');
+            }
+        } catch (e) {
+            console.error('Failed to add to cart:', e);
+        }
+    }
+
+    async function updateCartItem(productId, delta) {
+        try {
+            const res = await fetch('/api/cart/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: productId, delta: delta })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                localCart = data.items || [];
+                renderDrawerUI(data);
+            }
+        } catch (e) {
+            console.error('Failed to update cart:', e);
+        }
+    }
+
+    async function clearCart() {
+        try {
+            const res = await fetch('/api/cart/clear', { method: 'POST' });
+            if (res.ok) {
+                const data = await res.json();
+                localCart = [];
+                renderDrawerUI(data);
+                showToast('Your bag has been emptied.');
+            }
+        } catch (e) {
+            console.error('Failed to clear cart:', e);
+        }
+    }
+
+    function renderDrawerUI(data) {
+        const items = data.items || [];
+        const count = data.count || 0;
+        const total = data.totalFormatted || '$0.00';
+        const subtotal = data.subtotalFormatted || '$0.00';
+        const shipping = data.shippingFormatted || 'FREE';
+
+        // Update nav badge
+        const badge = document.getElementById('cartCountBadge');
+        if (badge) badge.textContent = count;
+        
+        const countTag = document.getElementById('drawerCountTag');
+        if (countTag) countTag.textContent = count + ' item' + (count === 1 ? '' : 's');
+
+        const emptyState = document.getElementById('drawerEmptyState');
+        const itemList = document.getElementById('drawerItemList');
+        const footer = document.getElementById('drawerFooter');
+
+        if (items.length === 0) {
+            emptyState.classList.remove('d-none');
+            itemList.classList.add('d-none');
+            footer.classList.add('d-none');
+            itemList.innerHTML = '';
+        } else {
+            emptyState.classList.add('d-none');
+            itemList.classList.remove('d-none');
+            footer.classList.remove('d-none');
+
+            document.getElementById('drawerSubtotal').textContent = subtotal;
+            document.getElementById('drawerShipping').textContent = shipping;
+            document.getElementById('drawerTotal').textContent = total;
+
+            itemList.innerHTML = items.map(item => `
+                <div class="omni-drawer-item">
+                    <img src="${item.picture}" alt="${item.name}" class="omni-drawer-item-img">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between">
+                            <strong class="small text-dark font-weight-bold" style="line-height: 1.2;">${item.name}</strong>
+                            <button class="btn btn-sm btn-link text-muted p-0" onclick="updateCartItem('${item.id}', -${item.quantity})">✕</button>
+                        </div>
+                        <div class="small text-primary font-weight-bold mt-1">${item.priceFormatted}</div>
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                            <button class="omni-qty-btn" onclick="updateCartItem('${item.id}', -1)">-</button>
+                            <span class="small font-weight-bold px-2">${item.quantity}</span>
+                            <button class="omni-qty-btn" onclick="updateCartItem('${item.id}', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Auto-fetch cart count on initial page load
+    document.addEventListener('DOMContentLoaded', fetchCart);
+    </script>
+{{ end }}

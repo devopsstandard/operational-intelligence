@@ -1,0 +1,52 @@
+# Compiled binaries, logs, databases
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+!gradle-wrapper.jar
+*.rar
+*.tar
+*.zip
+*.log
+
+# Terraform local files
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+!*.tfvars.example
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Environment & Secret variables
+.env
+.env.*
+!.env.example
+sa-key.json
+*.key
+*.pem
+
+# Kubernetes / Helm local caches
+*.kubeconfig
+
+# IDE & OS Artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# Node / Python / Go build caches in src
+**/node_modules/
+**/__pycache__/
+*.py[cod]
+**/bin/
+**/obj/

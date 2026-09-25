@@ -1,0 +1,9 @@
+project_id  = "your-gcp-project-id"
+region      = "us-central1"
+github_repo = "devopsstandard/operational-intelligence"
+
+# Argo CD Slack Notifications (Optional)
+enable_slack_notifications = true
+slack_token                = "xoxb-your-slack-bot-token"
+slack_channel              = "devops-alerts"
+

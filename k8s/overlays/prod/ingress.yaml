@@ -1,0 +1,41 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: prod-frontend-cert
+  namespace: boutique-prod
+spec:
+  domains:
+    - prod.devopsstandard.name.ng
+    - devopsstandard.name.ng
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prod-frontend-ingress
+  namespace: boutique-prod
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "boutique-ingress-ip-prod"
+    networking.gke.io/managed-certificates: "prod-frontend-cert"
+spec:
+  rules:
+  - host: prod.devopsstandard.name.ng
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+  - host: devopsstandard.name.ng
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
