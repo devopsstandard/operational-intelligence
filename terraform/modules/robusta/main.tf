@@ -52,12 +52,23 @@ resource "google_service_account_iam_member" "workload_identity_user" {
   member             = "serviceAccount:${var.project_id}.svc.id.goog[robusta/robusta-runner-service-account]"
 }
 
-# 4. BigQuery Immutable Audit Log Table for Operational Remediation
+# 4. BigQuery Immutable Audit Log Dataset & Table for Operational Remediation
+resource "google_bigquery_dataset" "audit_dataset" {
+  dataset_id                  = var.bigquery_dataset
+  friendly_name               = "Operational Remediation Audit Dataset (${var.environment})"
+  description                 = "Immutable audit logs for automated diagnosis, prompt interaction, and execution events as mandated by SOW Section 2"
+  location                    = var.region
+  project                     = var.project_id
+  delete_contents_on_destroy  = false
+}
+
 resource "google_bigquery_table" "remediation_audit" {
-  dataset_id          = var.bigquery_dataset
+  dataset_id          = google_bigquery_dataset.audit_dataset.dataset_id
   table_id            = "operational_remediation_audit"
   project             = var.project_id
   deletion_protection = false
+
+  depends_on = [google_bigquery_dataset.audit_dataset]
 
   time_partitioning {
     type  = "DAY"
