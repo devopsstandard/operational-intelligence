@@ -117,7 +117,7 @@ jobs:
         uses: google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: ${{ env.GKE_CLUSTER }}
-          location: ${{ env.GCP_REGION }}-a
+          location: ${{ env.GCP_REGION }}
 
       - name: Bootstrap GitOps & Ingress on GKE
         if: ${{ (github.event.inputs.action || 'plan') == 'apply' }}
