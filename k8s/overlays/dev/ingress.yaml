@@ -1,7 +1,7 @@
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
-  name: dev-frontend-cert-v2
+  name: dev-frontend-cert-v3
   namespace: omnipulse-dev
 spec:
   domains:
@@ -15,7 +15,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "boutique-frontend-ip-dev"
-    networking.gke.io/managed-certificates: "dev-frontend-cert-v2"
+    networking.gke.io/managed-certificates: "dev-frontend-cert-v3"
 spec:
   rules:
   - host: dev.devopsstandard.name.ng
