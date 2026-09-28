@@ -56,7 +56,7 @@ customPlaybooks:
     actions:
       - robusta_playbooks.stalled_consumer_playbook:
           target_deployment: "emailservice"
-          target_namespace: "boutique-dev"
+          target_namespace: "omnipulse-dev"
           max_stalled_seconds: 120
           auto_restart_safe: true
 
@@ -81,6 +81,6 @@ customPlaybooks:
     actions:
       - robusta_playbooks.vertex_quota_backoff_playbook:
           target_deployment: "paymentservice"
-          target_namespace: "boutique-dev"
+          target_namespace: "omnipulse-dev"
           cooldown_window_seconds: 180
           scale_down_step: 1

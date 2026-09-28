@@ -28,7 +28,7 @@ audit_logger = BigQueryAuditLogger()
 def vertex_quota_backoff_playbook(
     event: ExecutionBaseEvent,
     target_deployment: str = "paymentservice",
-    target_namespace: str = "boutique-dev",
+    target_namespace: str = "omnipulse-dev",
     cooldown_window_seconds: int = 180,
     scale_down_step: int = 1
 ):

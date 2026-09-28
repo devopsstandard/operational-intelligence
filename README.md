@@ -66,8 +66,8 @@ Operational Intelligence/
 ├── gitops/
 │   └── argocd-apps/
 │       ├── app-of-apps.yaml        # Root App-of-Apps controller manifest
-│       ├── dev-application.yaml    # Target: k8s/overlays/dev (boutique-dev namespace)
-│       ├── prod-application.yaml   # Target: k8s/overlays/prod (boutique-prod namespace)
+│       ├── dev-application.yaml    # Target: k8s/overlays/dev (omnipulse-dev namespace)
+│       ├── prod-application.yaml   # Target: k8s/overlays/prod (omnipulse-prod namespace)
 │       └── robusta-application.yaml# Target: Robusta OSS in namespace robusta
 ├── k8s/
 │   ├── base/                       # 12 polyglot microservice deployments & services

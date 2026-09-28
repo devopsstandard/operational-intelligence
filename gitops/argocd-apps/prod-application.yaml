@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: boutique-prod
+  name: omnipulse-prod
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -18,7 +18,7 @@ spec:
     path: k8s/overlays/prod
   destination:
     server: https://kubernetes.default.svc
-    namespace: boutique-prod
+    namespace: omnipulse-prod
   syncPolicy:
     automated:
       prune: true

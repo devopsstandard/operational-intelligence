@@ -1,6 +1,6 @@
-﻿apiVersion: v1
+apiVersion: v1
 kind: Namespace
 metadata:
-  name: boutique-dev
+  name: omnipulse-dev
   labels:
     environment: dev

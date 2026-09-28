@@ -32,7 +32,7 @@ audit_logger = BigQueryAuditLogger()
 def stalled_consumer_playbook(
     event: ExecutionBaseEvent,
     target_deployment: str = "emailservice",
-    target_namespace: str = "boutique-dev",
+    target_namespace: str = "omnipulse-dev",
     max_stalled_seconds: int = 120,
     auto_restart_safe: bool = True
 ):
