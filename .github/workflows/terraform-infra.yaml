@@ -49,8 +49,18 @@ jobs:
           echo "ENV_NAME=${ENV_NAME}" >> $GITHUB_ENV
           echo "GKE_CLUSTER=boutique-gke-cluster-${ENV_NAME}" >> $GITHUB_ENV
           
-          if [ -n "$PROJ_NUM" ]; then
+          # Support direct WIF_PROVIDER secret or dynamically build from GCP_PROJECT_NUMBER
+          CUSTOM_WIF="${{ secrets.WIF_PROVIDER }}"
+          if [ -n "$CUSTOM_WIF" ]; then
+            echo "WIF_PROVIDER=${CUSTOM_WIF}" >> $GITHUB_ENV
+          elif [ -n "$PROJ_NUM" ]; then
             echo "WIF_PROVIDER=projects/${PROJ_NUM}/locations/global/workloadIdentityPools/github-actions-pool-${ENV_NAME}/providers/github-actions-provider" >> $GITHUB_ENV
+          fi
+
+          CUSTOM_SA="${{ secrets.WIF_SERVICE_ACCOUNT }}"
+          if [ -n "$CUSTOM_SA" ]; then
+            echo "WIF_SERVICE_ACCOUNT=${CUSTOM_SA}" >> $GITHUB_ENV
+          else
             echo "WIF_SERVICE_ACCOUNT=boutique-cicd-sa-${ENV_NAME}@${PROJ_ID}.iam.gserviceaccount.com" >> $GITHUB_ENV
           fi
 
