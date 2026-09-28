@@ -1,6 +1,5 @@
 # GKE Autopilot Dev Workloads Patch
-# Recreate strategy ensures zero duplicate surge pods
-# Soft-tolerates Spot Pods without forcing hard nodeSelector
+# Standard On-Demand compute (utilizes 24 available vCPUs and 6 free instances in project)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -11,11 +10,6 @@ spec:
     type: Recreate
   template:
     spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
       containers:
       - name: server
         env:
@@ -30,13 +24,6 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,13 +33,6 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -69,13 +49,6 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -85,13 +58,6 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -101,13 +67,6 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -117,13 +76,6 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -133,13 +85,6 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -149,13 +94,6 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -165,13 +103,6 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -181,10 +112,3 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
