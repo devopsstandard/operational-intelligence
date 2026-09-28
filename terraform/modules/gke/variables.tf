@@ -39,6 +39,12 @@ variable "master_ipv4_cidr_block" {
   default     = "172.16.0.0/28"
 }
 
+variable "enable_master_authorized_networks" {
+  type        = bool
+  description = "Whether to restrict GKE master control plane to specific authorized CIDRs"
+  default     = false
+}
+
 variable "master_authorized_cidrs" {
   type = list(object({
     cidr_block   = string
