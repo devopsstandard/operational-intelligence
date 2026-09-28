@@ -27,6 +27,14 @@ on:
           - adservice
           - loadgenerator
           - shoppingassistantservice
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
 
 permissions:
   contents: read
@@ -97,7 +105,12 @@ jobs:
           PROJ_NUM="${{ secrets.GCP_PROJECT_NUMBER }}"
           echo "GCP_PROJECT_NUMBER=${PROJ_NUM}" >> $GITHUB_ENV
 
-          ENV_NAME="${{ github.ref_name == 'main' && 'prod' || 'dev' }}"
+          ENV_INPUT="${{ github.event.inputs.environment }}"
+          if [ -n "$ENV_INPUT" ]; then
+            ENV_NAME="$ENV_INPUT"
+          else
+            ENV_NAME="${{ github.ref_name == 'main' && 'dev' || 'dev' }}"
+          fi
           echo "ENV_NAME=${ENV_NAME}" >> $GITHUB_ENV
           echo "AR_REPOSITORY=${GCP_REGION}-docker.pkg.dev/${PROJ_ID}/boutique-containers-${ENV_NAME}" >> $GITHUB_ENV
 
@@ -144,6 +157,7 @@ jobs:
           push: true
           tags: |
             ${{ env.AR_REPOSITORY }}/${{ matrix.service }}:${{ env.ENV_NAME }}
+            ${{ env.AR_REPOSITORY }}/${{ matrix.service }}:latest
             ${{ env.AR_REPOSITORY }}/${{ matrix.service }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -175,3 +189,12 @@ jobs:
             echo "==> COSIGN_KMS_KEY secret not defined. Signing with keyless OIDC identity..."
             cosign sign --yes "${IMAGE_DIGEST}" || echo "OIDC keyless signing completed"
           fi
+
+      - name: Authenticate to GKE & Rollout Pods
+        run: |
+          echo "==> Configuring GKE credentials for cluster boutique-gke-cluster-${ENV_NAME} in ${GCP_REGION}..."
+          gcloud container clusters get-credentials boutique-gke-cluster-${ENV_NAME} --region=${GCP_REGION} --project=${GCP_PROJECT}
+          
+          echo "==> Rolling out updated image to deployment/${{ matrix.service }} in namespace omnipulse-${ENV_NAME}..."
+          kubectl set image deployment/${{ matrix.service }} server=${{ env.AR_REPOSITORY }}/${{ matrix.service }}:${{ env.ENV_NAME }} -n omnipulse-${ENV_NAME} || true
+          kubectl rollout restart deployment/${{ matrix.service }} -n omnipulse-${ENV_NAME} || true
