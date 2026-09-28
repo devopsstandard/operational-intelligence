@@ -1,11 +1,14 @@
 # GKE Autopilot Dev Workloads Patch
-# Soft-tolerates Spot Pods without forcing hard nodeSelector (prevents GCE Spot Quota deadlocks)
+# Recreate strategy ensures zero duplicate surge pods
+# Soft-tolerates Spot Pods without forcing hard nodeSelector
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -25,6 +28,8 @@ metadata:
   name: cartservice
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -39,6 +44,8 @@ metadata:
   name: checkoutservice
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -52,19 +59,7 @@ kind: Deployment
 metadata:
   name: loadgenerator
 spec:
-  replicas: 1
-  template:
-    spec:
-      tolerations:
-      - key: "cloud.google.com/gke-spot"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
-      containers:
-      - name: main
-        env:
-        - name: USERS
-          value: "5"
+  replicas: 0
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -72,6 +67,8 @@ metadata:
   name: productcatalogservice
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -86,6 +83,8 @@ metadata:
   name: currencyservice
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -100,6 +99,8 @@ metadata:
   name: paymentservice
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -114,6 +115,8 @@ metadata:
   name: shippingservice
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -128,6 +131,8 @@ metadata:
   name: emailservice
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -142,6 +147,8 @@ metadata:
   name: recommendationservice
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -156,6 +163,8 @@ metadata:
   name: adservice
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
@@ -170,6 +179,8 @@ metadata:
   name: redis-cart
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     spec:
       tolerations:
