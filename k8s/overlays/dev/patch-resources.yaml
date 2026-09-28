@@ -1,5 +1,5 @@
 # GKE Autopilot Dev Workloads Patch
-# Utilizes Spot Pods (cloud.google.com/gke-spot) for 60-91% cost reduction in Dev
+# Soft-tolerates Spot Pods without forcing hard nodeSelector (prevents GCE Spot Quota deadlocks)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,8 +8,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -29,8 +27,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -45,8 +41,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -61,8 +55,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -82,8 +74,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -98,8 +88,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -114,8 +102,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -130,8 +116,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -146,8 +130,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -162,8 +144,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -178,8 +158,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
@@ -194,8 +172,6 @@ spec:
   replicas: 1
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-spot: "true"
       tolerations:
       - key: "cloud.google.com/gke-spot"
         operator: "Equal"
