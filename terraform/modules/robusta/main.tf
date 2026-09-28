@@ -54,12 +54,12 @@ resource "google_service_account_iam_member" "workload_identity_user" {
 
 # 4. BigQuery Immutable Audit Log Dataset & Table for Operational Remediation
 resource "google_bigquery_dataset" "audit_dataset" {
-  dataset_id                  = var.bigquery_dataset
-  friendly_name               = "Operational Remediation Audit Dataset (${var.environment})"
-  description                 = "Immutable audit logs for automated diagnosis, prompt interaction, and execution events as mandated by SOW Section 2"
-  location                    = var.region
-  project                     = var.project_id
-  delete_contents_on_destroy  = false
+  dataset_id                 = var.bigquery_dataset
+  friendly_name              = "Operational Remediation Audit Dataset (${var.environment})"
+  description                = "Immutable audit logs for automated diagnosis, prompt interaction, and execution events as mandated by SOW Section 2"
+  location                   = var.region
+  project                    = var.project_id
+  delete_contents_on_destroy = false
 }
 
 resource "google_bigquery_table" "remediation_audit" {
