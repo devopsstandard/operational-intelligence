@@ -17,6 +17,14 @@ on:
           - plan
           - apply
           - destroy
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
 
 permissions:
   contents: read
@@ -45,7 +53,12 @@ jobs:
           PROJ_NUM="${{ secrets.GCP_PROJECT_NUMBER }}"
           echo "GCP_PROJECT_NUMBER=${PROJ_NUM}" >> $GITHUB_ENV
 
-          ENV_NAME="${{ github.ref_name == 'main' && 'prod' || 'dev' }}"
+          ENV_INPUT="${{ github.event.inputs.environment }}"
+          if [ -n "$ENV_INPUT" ]; then
+            ENV_NAME="$ENV_INPUT"
+          else
+            ENV_NAME="${{ github.ref_name == 'dev' && 'dev' || 'dev' }}"
+          fi
           echo "ENV_NAME=${ENV_NAME}" >> $GITHUB_ENV
           echo "GKE_CLUSTER=boutique-gke-cluster-${ENV_NAME}" >> $GITHUB_ENV
           
