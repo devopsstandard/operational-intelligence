@@ -101,6 +101,16 @@ jobs:
             VAR_FLAGS="${VAR_FLAGS} -var=github_pat_token=${PAT_TOKEN}"
           fi
 
+          SLACK_BOT_TOKEN="${{ secrets.SLACK_BOT_TOKEN || secrets.SLACK_TOKEN }}"
+          if [ -n "$SLACK_BOT_TOKEN" ]; then
+            VAR_FLAGS="${VAR_FLAGS} -var=slack_token=${SLACK_BOT_TOKEN} -var=enable_slack_notifications=true"
+          fi
+
+          SLACK_CHAN="${{ secrets.SLACK_CHANNEL }}"
+          if [ -n "$SLACK_CHAN" ]; then
+            VAR_FLAGS="${VAR_FLAGS} -var=slack_channel=${SLACK_CHAN}"
+          fi
+
           if [ "$ACTION" == "destroy" ]; then
             echo "==> Triggering TERRAFORM DESTROY..."
             terraform destroy -input=false -auto-approve $VAR_FLAGS
