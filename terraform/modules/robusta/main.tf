@@ -210,7 +210,7 @@ resource "helm_release" "robusta" {
         bq_dataset    = var.bigquery_dataset
         slack_channel = var.slack_channel
       }
-      sinksConfig = [
+      sinksConfig = var.slack_api_key != "" ? [
         {
           slack_sink = {
             name           = "slack_triage"
@@ -219,7 +219,7 @@ resource "helm_release" "robusta" {
             notify_on_eval = true
           }
         }
-      ]
+      ] : []
     })
   ]
 
