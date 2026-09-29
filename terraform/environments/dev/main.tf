@@ -123,7 +123,7 @@ module "robusta" {
   project_id       = var.project_id
   region           = var.region
   environment      = "dev"
-  cluster_name     = module.gke.cluster_name
+  cluster_name     = "omnipulse-gke-cluster-${var.environment}"
   slack_channel    = var.slack_channel
   slack_api_key    = var.slack_token
   bigquery_dataset = var.bigquery_dataset
