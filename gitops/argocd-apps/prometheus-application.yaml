@@ -6,12 +6,26 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
     notifications.argoproj.io/subscribe.on-sync-running.slack: operational-intelligence
     notifications.argoproj.io/subscribe.on-sync-succeeded.slack: operational-intelligence
     notifications.argoproj.io/subscribe.on-sync-failed.slack: operational-intelligence
     notifications.argoproj.io/subscribe.on-health-degraded.slack: operational-intelligence
 spec:
   project: default
+  ignoreDifferences:
+    - group: apps
+      kind: StatefulSet
+      jsonPointers:
+        - /status/terminatingReplicas
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /status/terminatingReplicas
+    - group: apps
+      kind: ReplicaSet
+      jsonPointers:
+        - /status/terminatingReplicas
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
     targetRevision: 58.7.2
@@ -156,6 +170,7 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - RespectIgnoreDifferences=true
     retry:
       limit: 5
       backoff:
