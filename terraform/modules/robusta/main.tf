@@ -202,10 +202,10 @@ resource "helm_release" "robusta" {
   values = [
     yamlencode({
       globalConfig = {
-        cluster_name  = var.cluster_name
-        signing_key   = "robusta-oss-internal"
-        account_id    = "operational-intelligence"
-        gcp_project   = var.project_id
+        cluster_name     = var.cluster_name
+        signing_key      = "robusta-oss-internal"
+        account_id       = "operational-intelligence"
+        gcp_project      = var.project_id
         gemini_model     = var.gemini_model
         bq_dataset       = var.bigquery_dataset
         slack_channel    = var.slack_channel
