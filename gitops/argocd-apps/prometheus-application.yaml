@@ -6,7 +6,6 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
-    argocd.argoproj.io/compare-options: ServerSideDiff=true
     notifications.argoproj.io/subscribe.on-sync-running.slack: operational-intelligence
     notifications.argoproj.io/subscribe.on-sync-succeeded.slack: operational-intelligence
     notifications.argoproj.io/subscribe.on-sync-failed.slack: operational-intelligence
@@ -169,8 +168,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
-      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
     retry:
       limit: 5
       backoff:
