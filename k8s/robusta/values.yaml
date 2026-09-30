@@ -35,18 +35,27 @@ globalConfig:
   gcp_project: "PROJECT_ID"
   gemini_model: "gemini-1.5-flash"
   bq_dataset: "ops_analytics_prod"
-  slack_channel: "ops-triage"
+  slack_channel: "operational-intelligence"
 
 # 4. Sinks: Slack ChatOps & BigQuery Immutable Audit
 sinksConfig:
   - slack_sink:
       name: slack_triage
-      slack_channel: "ops-triage"
+      slack_channel: "operational-intelligence"
       api_key: "${SLACK_BOT_TOKEN}"
       notify_on_eval: true
 
-# 5. Playbooks Configuration for Top 3 SOW Failure Modes (< 5 min MTTR)
+# 5. Playbooks Configuration for Top SOW Failure Modes (< 5 min MTTR)
 customPlaybooks:
+  # Autonomous Self-Healing for CrashLoopBackOff Workloads
+  - triggers:
+      - on_pod_crash_loop:
+          namespace_prefix: "omnipulse-"
+          rate_limit: 300
+    actions:
+      - restart_loop_reporter: {}
+      - rollout_restart: {}
+
   # Failure Mode 1: Deadlocked / Stalled Consumer (emailservice / consumer-triage)
   - triggers:
       - on_prometheus_alert:

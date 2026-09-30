@@ -220,6 +220,26 @@ resource "helm_release" "robusta" {
           }
         }
       ] : []
+      customPlaybooks = [
+        {
+          triggers = [
+            {
+              on_pod_crash_loop = {
+                namespace_prefix = "omnipulse-"
+                rate_limit       = 300
+              }
+            }
+          ]
+          actions = [
+            {
+              restart_loop_reporter = {}
+            },
+            {
+              rollout_restart = {}
+            }
+          ]
+        }
+      ]
     })
   ]
 

@@ -22,7 +22,7 @@ variable "cluster_name" {
 variable "slack_channel" {
   description = "Slack channel for Robusta notifications & HITL approvals"
   type        = string
-  default     = "ops-triage"
+  default     = "operational-intelligence"
 }
 
 variable "slack_api_key" {

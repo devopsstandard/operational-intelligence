@@ -31,7 +31,7 @@ variable "slack_token" {
 variable "slack_channel" {
   type        = string
   description = "Default Slack channel for Argo CD notifications"
-  default     = "devops-alerts"
+  default     = "operational-intelligence"
 }
 
 variable "create_wif" {
