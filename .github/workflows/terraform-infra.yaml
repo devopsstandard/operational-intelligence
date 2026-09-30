@@ -165,6 +165,12 @@ jobs:
           kubectl apply -f k8s/argocd-ingress/argocd-ingress.yaml
           echo "==> Deploying Argo CD Application for ${ENV_NAME}..."
           kubectl apply -f gitops/argocd-apps/${ENV_NAME}-application.yaml
+          if [ -f "gitops/argocd-apps/prometheus-application.yaml" ]; then
+            echo "==> Deploying Prometheus Stack Argo CD Application..."
+            kubectl apply -f gitops/argocd-apps/prometheus-application.yaml -n argocd
+          fi
+          echo "==> Cleaning up test crash workload if present..."
+          kubectl delete deployment crashing-consumer-v2 -n omnipulse-${ENV_NAME} --ignore-not-found=true
           echo "==> GitOps bootstrap complete! Argo CD is now actively managing ${ENV_NAME}."
 
 

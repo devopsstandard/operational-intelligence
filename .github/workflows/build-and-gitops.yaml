@@ -1,4 +1,4 @@
-﻿name: Microservices Build & GitOps Rollout
+name: Microservices Build & GitOps Rollout
 
 on:
   push:
@@ -6,11 +6,21 @@ on:
     paths:
       - 'src/**'
       - 'k8s/**'
+      - 'gitops/**'
       - '.github/workflows/build-and-gitops.yaml'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 env:
@@ -30,17 +40,68 @@ jobs:
       - name: Validate Prod Overlay
         run: kubectl kustomize k8s/overlays/prod > /dev/null
 
-  gitops-sync-notify:
-    name: GitOps Sync Notification
+  gitops-rollout:
+    name: GitOps Rollout & Argo CD Sync
     needs: [validate-k8s]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Output GitOps Sync Target
+      - name: Configure Dynamic Environment Context
         run: |
-          ENV_NAME="${{ github.ref_name == 'main' && 'prod' || 'dev' }}"
-          echo "==> Changes detected for environment: ${ENV_NAME}"
-          echo "==> Target overlay: k8s/overlays/${ENV_NAME}"
-          echo "==> Argo CD will automatically detect this commit and reconcile changes."
+          PROJ_ID="${{ secrets.GCP_PROJECT_ID }}"
+          if [ -z "$PROJ_ID" ]; then
+            echo "::error::Secret GCP_PROJECT_ID is not configured in GitHub Repository Secrets!"
+            exit 1
+          fi
+          echo "GCP_PROJECT=${PROJ_ID}" >> $GITHUB_ENV
+
+          PROJ_NUM="${{ secrets.GCP_PROJECT_NUMBER }}"
+          echo "GCP_PROJECT_NUMBER=${PROJ_NUM}" >> $GITHUB_ENV
+
+          ENV_INPUT="${{ github.event.inputs.environment }}"
+          if [ -n "$ENV_INPUT" ]; then
+            ENV_NAME="$ENV_INPUT"
+          else
+            ENV_NAME="${{ github.ref_name == 'dev' && 'dev' || 'dev' }}"
+          fi
+          echo "ENV_NAME=${ENV_NAME}" >> $GITHUB_ENV
+          echo "GKE_CLUSTER=boutique-gke-cluster-${ENV_NAME}" >> $GITHUB_ENV
+
+          # Support direct WIF_PROVIDER secret or dynamically build from GCP_PROJECT_NUMBER
+          CUSTOM_WIF="${{ secrets.WIF_PROVIDER }}"
+          if [ -n "$CUSTOM_WIF" ]; then
+            echo "WIF_PROVIDER=${CUSTOM_WIF}" >> $GITHUB_ENV
+          elif [ -n "$PROJ_NUM" ]; then
+            echo "WIF_PROVIDER=projects/${PROJ_NUM}/locations/global/workloadIdentityPools/github-actions-pool-${ENV_NAME}/providers/github-actions-provider" >> $GITHUB_ENV
+          fi
+
+          CUSTOM_SA="${{ secrets.WIF_SERVICE_ACCOUNT }}"
+          if [ -n "$CUSTOM_SA" ]; then
+            echo "WIF_SERVICE_ACCOUNT=${CUSTOM_SA}" >> $GITHUB_ENV
+          else
+            echo "WIF_SERVICE_ACCOUNT=boutique-cicd-sa-${ENV_NAME}@${PROJ_ID}.iam.gserviceaccount.com" >> $GITHUB_ENV
+          fi
+
+      - name: Authenticate to GCP (WIF with SA Key Fallback)
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ secrets.GCP_SA_KEY == '' && env.WIF_PROVIDER || '' }}
+          service_account: ${{ secrets.GCP_SA_KEY == '' && env.WIF_SERVICE_ACCOUNT || '' }}
+
+      - name: Get GKE Credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GCP_REGION }}
+
+      - name: Sync GitOps Applications & Clean Test Workloads
+        run: |
+          echo "==> Syncing all GitOps application manifests to Argo CD..."
+          kubectl apply -f gitops/argocd-apps/prometheus-application.yaml -n argocd
+          echo "==> Cleaning up test crash workload if present..."
+          kubectl delete deployment crashing-consumer-v2 -n omnipulse-${ENV_NAME} --ignore-not-found=true
+          echo "==> Done! GitOps applications synced successfully via GitHub Actions."
