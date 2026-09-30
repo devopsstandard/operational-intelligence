@@ -1,0 +1,164 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    notifications.argoproj.io/subscribe.on-sync-running.slack: operational-intelligence
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: operational-intelligence
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: operational-intelligence
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: operational-intelligence
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 58.7.2
+    chart: kube-prometheus-stack
+    helm:
+      valuesObject:
+        # 1. GKE Autopilot Overrides - Disable Host Access / Privileged DaemonSets
+        nodeExporter:
+          enabled: false
+        prometheus-node-exporter:
+          enabled: false
+
+        # Disable GKE-managed control plane scraping (avoids TargetDown noise)
+        kubeScheduler:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+        kubeProxy:
+          enabled: false
+
+        # 2. Prometheus Operator & Server Configuration
+        prometheusOperator:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+        prometheus:
+          prometheusSpec:
+            serviceMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+            ruleSelectorNilUsesHelmValues: false
+            retention: 7d
+            resources:
+              requests:
+                cpu: 250m
+                memory: 512Mi
+              limits:
+                cpu: 1000m
+                memory: 1536Mi
+
+        # 3. Alertmanager Configuration - Routing to Robusta OSS Webhook
+        alertmanager:
+          enabled: true
+          alertmanagerSpec:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+          config:
+            global:
+              resolve_timeout: 5m
+            route:
+              group_by: ['alertname', 'namespace', 'job']
+              group_wait: 30s
+              group_interval: 5m
+              repeat_interval: 4h
+              receiver: 'robusta-webhook'
+              routes:
+                - receiver: 'robusta-webhook'
+                  matchers:
+                    - severity =~ "critical|warning|info"
+            receivers:
+              - name: 'robusta-webhook'
+                webhook_configs:
+                  - url: 'http://robusta-runner.robusta.svc.cluster.local/api/alerts'
+                    send_resolved: true
+
+        # 4. Kube-State-Metrics (Cluster State Telemetry)
+        kubeStateMetrics:
+          enabled: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+        # 5. Grafana Dashboard Engine
+        grafana:
+          enabled: true
+          adminPassword: "prom-operator"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+        # 6. SRE Custom Alerting Rules for OmniPulse Platform
+        additionalPrometheusRulesMap:
+          omnipulse-sre-rules:
+            groups:
+              - name: omnipulse.sre.alerts
+                rules:
+                  - alert: FrontendHTTP5xxRateHigh
+                    expr: sum(rate(http_requests_total{status=~"5.."}[2m])) / clamp_min(sum(rate(http_requests_total[2m])), 1) * 100 > 5
+                    for: 1m
+                    labels:
+                      severity: critical
+                      target_workload: frontend
+                    annotations:
+                      summary: "High 5xx error rate detected on frontend storefront (> 5%)"
+                      description: "Frontend HTTP 5xx rate has exceeded 5% over the last 2 minutes. Customer checkout or browsing may be impaired."
+
+                  - alert: ConsumerTriageStalled
+                    expr: rate(kube_pod_container_status_restarts_total{namespace="omnipulse-dev"}[5m]) * 60 > 1
+                    for: 1m
+                    labels:
+                      severity: critical
+                      target_workload: emailservice
+                    annotations:
+                      summary: "Streaming Consumer or Microservice restarting frequently in omnipulse-dev"
+                      description: "Pod in omnipulse-dev has restarted more than once in the past 5 minutes, indicating instability or deadlock."
+
+                  - alert: ContainerMemoryNearLimit
+                    expr: (container_memory_working_set_bytes{container!="",namespace="omnipulse-dev"} / container_spec_memory_limit_bytes{container!="",namespace="omnipulse-dev"}) * 100 > 85
+                    for: 2m
+                    labels:
+                      severity: warning
+                    annotations:
+                      summary: "Container memory working set > 85% of limit"
+                      description: "Container {{ $labels.container }} in pod {{ $labels.pod }} is approaching its memory limit. Risk of OOMKill."
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  retry:
+    limit: 5
+    backoff:
+      duration: 10s
+      factor: 2
+      maxDuration: 5m

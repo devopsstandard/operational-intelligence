@@ -36,6 +36,8 @@ globalConfig:
   gemini_model: "gemini-1.5-flash"
   bq_dataset: "ops_analytics_prod"
   slack_channel: "operational-intelligence"
+  prometheus_url: "http://prometheus-operated.monitoring.svc.cluster.local:9090"
+  alertmanager_url: "http://alertmanager-operated.monitoring.svc.cluster.local:9093"
 
 # 4. Sinks: Slack ChatOps & BigQuery Immutable Audit
 sinksConfig:

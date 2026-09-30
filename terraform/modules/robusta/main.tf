@@ -206,9 +206,11 @@ resource "helm_release" "robusta" {
         signing_key   = "robusta-oss-internal"
         account_id    = "operational-intelligence"
         gcp_project   = var.project_id
-        gemini_model  = var.gemini_model
-        bq_dataset    = var.bigquery_dataset
-        slack_channel = var.slack_channel
+        gemini_model     = var.gemini_model
+        bq_dataset       = var.bigquery_dataset
+        slack_channel    = var.slack_channel
+        prometheus_url   = "http://prometheus-operated.monitoring.svc.cluster.local:9090"
+        alertmanager_url = "http://alertmanager-operated.monitoring.svc.cluster.local:9093"
       }
       sinksConfig = var.slack_api_key != "" ? [
         {
