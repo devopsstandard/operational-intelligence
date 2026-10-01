@@ -37,7 +37,7 @@ spec:
         prometheus-node-exporter:
           enabled: false
 
-        # Disable GKE-managed control plane scraping (avoids TargetDown noise)
+        # Disable GKE-managed control plane scraping (avoids TargetDown noise & kube-system lockdown)
         kubeScheduler:
           enabled: false
         kubeControllerManager:
@@ -45,6 +45,10 @@ spec:
         kubeEtcd:
           enabled: false
         kubeProxy:
+          enabled: false
+        kubeDns:
+          enabled: false
+        coreDns:
           enabled: false
 
         # 2. Prometheus Operator & Server Configuration
