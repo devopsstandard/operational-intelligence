@@ -31,6 +31,10 @@ spec:
     chart: kube-prometheus-stack
     helm:
       valuesObject:
+        # Disable CRD patching on sync to avoid 262,144 byte annotation limit (CRDs are already in cluster)
+        crds:
+          enabled: false
+
         # 1. GKE Autopilot Overrides - Disable Host Access / Privileged DaemonSets
         nodeExporter:
           enabled: false
