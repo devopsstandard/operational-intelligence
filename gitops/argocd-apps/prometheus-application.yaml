@@ -49,6 +49,12 @@ spec:
 
         # 2. Prometheus Operator & Server Configuration
         prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+            patch:
+              enabled: false
+          tls:
+            enabled: false
           resources:
             requests:
               cpu: 100m
