@@ -91,27 +91,9 @@ jobs:
 
           TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-          kubectl exec -n robusta "$ROBUSTA_POD" -- python3 -c "
-import urllib.request, json
-payload = [{
-    'status': 'firing',
-    'labels': {
-        'alertname': '${ALERT_NAME}',
-        'severity': '${SEVERITY}',
-        'namespace': 'omnipulse-dev',
-        'pod': 'frontend-simulated',
-        'target_workload': 'frontend'
-    },
-    'annotations': {
-        'summary': 'Simulated SRE Incident: ${ALERT_NAME}',
-        'description': 'Live operational intelligence test dispatched via CI/CD pipeline. Validating Prometheus Alertmanager webhook routing, Gemini 1.5 Flash RCA, and Slack ChatOps dispatch.'
-    },
-    'startsAt': '${TIMESTAMP}',
-    'generatorURL': 'http://prometheus-operated.monitoring.svc.cluster.local:9090'
-}]
-req = urllib.request.Request('http://127.0.0.1:5000/api/alerts', data=json.dumps(payload).encode('utf-8'), headers={'Content-Type': 'application/json'})
-resp = urllib.request.urlopen(req)
-print('Robusta In-Cluster Webhook Response Status:', resp.status)
-"
+          PAYLOAD="[{\"status\":\"firing\",\"labels\":{\"alertname\":\"${ALERT_NAME}\",\"severity\":\"${SEVERITY}\",\"namespace\":\"omnipulse-dev\",\"pod\":\"frontend-simulated\",\"target_workload\":\"frontend\"},\"annotations\":{\"summary\":\"Simulated SRE Incident: ${ALERT_NAME}\",\"description\":\"Live operational intelligence test dispatched via CI/CD pipeline. Validating Prometheus Alertmanager webhook routing, Gemini 1.5 Flash RCA, and Slack ChatOps dispatch.\"},\"startsAt\":\"${TIMESTAMP}\",\"generatorURL\":\"http://prometheus-operated.monitoring.svc.cluster.local:9090\"}]"
+
+          kubectl exec -n robusta "$ROBUSTA_POD" -- python3 -c "import sys, urllib.request; req = urllib.request.Request('http://127.0.0.1:5000/api/alerts', data=sys.argv[1].encode('utf-8'), headers={'Content-Type': 'application/json'}); print('Robusta Webhook Response Status:', urllib.request.urlopen(req).status)" "$PAYLOAD"
+
           echo "==> Synthetic incident dispatched successfully!"
           echo "==> Check your Slack channel: #operational-intelligence"
