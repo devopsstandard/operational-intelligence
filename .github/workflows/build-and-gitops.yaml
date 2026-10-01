@@ -102,6 +102,8 @@ jobs:
         run: |
           echo "==> Syncing all GitOps application manifests to Argo CD..."
           kubectl apply -f gitops/argocd-apps/prometheus-application.yaml -n argocd
-          echo "==> Cleaning up test crash workload if present..."
-          kubectl delete deployment crashing-consumer-v2 -n omnipulse-${ENV_NAME} --ignore-not-found=true
+          echo "==> Applying Kustomize manifests for ${ENV_NAME}..."
+          kubectl apply -k k8s/overlays/${ENV_NAME}
+          echo "==> Waiting for emailservice rollout to complete..."
+          kubectl rollout status deployment/emailservice -n omnipulse-${ENV_NAME} --timeout=180s
           echo "==> Done! GitOps applications synced successfully via GitHub Actions."
