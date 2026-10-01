@@ -95,3 +95,24 @@ customPlaybooks:
           target_namespace: "omnipulse-dev"
           cooldown_window_seconds: 180
           scale_down_step: 1
+
+  # Failure Mode 4: Storefront HTTP 5xx Outage Surge Auto-Remediation
+  - triggers:
+      - on_prometheus_alert:
+          alert_name: "FrontendHTTP5xxRateHigh"
+    actions:
+      - rollout_restart: {}
+
+  # Failure Mode 5: Proactive Memory Saturation Prevention (Pre-OOMKill)
+  - triggers:
+      - on_prometheus_alert:
+          alert_name: "ContainerMemoryNearLimit"
+    actions:
+      - rollout_restart: {}
+
+  # Failure Mode 6: Proactive CPU Saturation Remediation
+  - triggers:
+      - on_prometheus_alert:
+          alert_name: "ContainerCPUNearLimit"
+    actions:
+      - rollout_restart: {}

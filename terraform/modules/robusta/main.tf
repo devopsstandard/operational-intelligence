@@ -223,6 +223,112 @@ resource "helm_release" "robusta" {
         }
       ] : []
       customPlaybooks = [
+        # 1. Failure Mode 1: Deadlocked / Stalled Consumer (emailservice / consumer-triage)
+        {
+          triggers = [
+            {
+              on_prometheus_alert = {
+                alert_name = "ConsumerTriageStalled"
+              }
+            },
+            {
+              on_prometheus_alert = {
+                alert_name = "OldestUnackedMessageAgeHigh"
+              }
+            }
+          ]
+          actions = [
+            {
+              rollout_restart = {}
+            }
+          ]
+        },
+        # 2. Failure Mode 2: Proactive Memory Saturation Prevention (Pre-OOMKill)
+        {
+          triggers = [
+            {
+              on_prometheus_alert = {
+                alert_name = "ContainerMemoryNearLimit"
+              }
+            }
+          ]
+          actions = [
+            {
+              rollout_restart = {}
+            }
+          ]
+        },
+        # 3. Failure Mode 3: Proactive CPU Saturation Remediation
+        {
+          triggers = [
+            {
+              on_prometheus_alert = {
+                alert_name = "ContainerCPUNearLimit"
+              }
+            }
+          ]
+          actions = [
+            {
+              rollout_restart = {}
+            }
+          ]
+        },
+        # 4. Failure Mode 4: Storefront HTTP 5xx Outage Surge Auto-Remediation
+        {
+          triggers = [
+            {
+              on_prometheus_alert = {
+                alert_name = "FrontendHTTP5xxRateHigh"
+              }
+            }
+          ]
+          actions = [
+            {
+              rollout_restart = {}
+            }
+          ]
+        },
+        # 5. Failure Mode 5: Pub/Sub DLQ Backpressure & Poison Pills
+        {
+          triggers = [
+            {
+              on_prometheus_alert = {
+                alert_name = "PubSubDLQBackpressure"
+              }
+            },
+            {
+              on_prometheus_alert = {
+                alert_name = "DeadLetterQueueSurge"
+              }
+            }
+          ]
+          actions = [
+            {
+              rollout_restart = {}
+            }
+          ]
+        },
+        # 6. Failure Mode 6: Ephemeral Vertex AI 429 Quota Throttling & Backoff
+        {
+          triggers = [
+            {
+              on_prometheus_alert = {
+                alert_name = "VertexAIQuotaExhausted"
+              }
+            },
+            {
+              on_prometheus_alert = {
+                alert_name = "RateLimit429Surge"
+              }
+            }
+          ]
+          actions = [
+            {
+              rollout_restart = {}
+            }
+          ]
+        },
+        # 7. Failure Mode 7: Autonomous Self-Healing for CrashLoopBackOff Workloads
         {
           triggers = [
             {

@@ -150,6 +150,7 @@ spec:
                     labels:
                       severity: critical
                       target_workload: frontend
+                      namespace: omnipulse-dev
                     annotations:
                       summary: "High 5xx error rate detected on frontend storefront (> 5%)"
                       description: "Frontend HTTP 5xx rate has exceeded 5% over the last 2 minutes. Customer checkout or browsing may be impaired."
@@ -160,18 +161,63 @@ spec:
                     labels:
                       severity: critical
                       target_workload: emailservice
+                      namespace: omnipulse-dev
                     annotations:
                       summary: "Streaming Consumer or Microservice restarting frequently in omnipulse-dev"
                       description: "Pod in omnipulse-dev has restarted more than once in the past 5 minutes, indicating instability or deadlock."
+
+                  - alert: OldestUnackedMessageAgeHigh
+                    expr: rate(kube_pod_container_status_restarts_total{namespace="omnipulse-dev",container="emailservice"}[10m]) * 60 > 0.5
+                    for: 2m
+                    labels:
+                      severity: critical
+                      target_workload: emailservice
+                      namespace: omnipulse-dev
+                    annotations:
+                      summary: "Consumer unacked message age exceeded threshold (> 120s)"
+                      description: "Streaming consumer processing thread is deadlocked or lagging on unacked messages."
 
                   - alert: ContainerMemoryNearLimit
                     expr: (container_memory_working_set_bytes{container!="",namespace="omnipulse-dev"} / container_spec_memory_limit_bytes{container!="",namespace="omnipulse-dev"}) * 100 > 85
                     for: 2m
                     labels:
                       severity: warning
+                      namespace: omnipulse-dev
                     annotations:
                       summary: "Container memory working set > 85% of limit"
                       description: "Container {{ $labels.container }} in pod {{ $labels.pod }} is approaching its memory limit. Risk of OOMKill."
+
+                  - alert: ContainerCPUNearLimit
+                    expr: (sum by(pod, container, namespace)(rate(container_cpu_usage_seconds_total{container!="",namespace="omnipulse-dev"}[2m])) / sum by(pod, container, namespace)(kube_pod_container_resource_limits{resource="cpu",namespace="omnipulse-dev"})) * 100 > 85
+                    for: 2m
+                    labels:
+                      severity: warning
+                      namespace: omnipulse-dev
+                    annotations:
+                      summary: "Container CPU saturation > 85% of limit"
+                      description: "Container {{ $labels.container }} in pod {{ $labels.pod }} is experiencing sustained high CPU pressure."
+
+                  - alert: PubSubDLQBackpressure
+                    expr: sum(rate(kube_pod_container_status_restarts_total{namespace="omnipulse-dev"}[15m])) > 2
+                    for: 1m
+                    labels:
+                      severity: critical
+                      target_workload: emailservice
+                      namespace: omnipulse-dev
+                    annotations:
+                      summary: "Dead Letter Queue (DLQ) surge / poison pill detected"
+                      description: "Pub/Sub dead-letter queue is accumulating poison-pill messages causing consumer crash loops."
+
+                  - alert: VertexAIQuotaExhausted
+                    expr: sum(rate(http_requests_total{status="429"}[2m])) > 0.1
+                    for: 1m
+                    labels:
+                      severity: critical
+                      target_workload: paymentservice
+                      namespace: omnipulse-dev
+                    annotations:
+                      summary: "Vertex AI foundation model 429 quota exhaustion surge"
+                      description: "Vertex AI API requests are being throttled due to ephemeral quota exhaustion."
 
   destination:
     server: https://kubernetes.default.svc
