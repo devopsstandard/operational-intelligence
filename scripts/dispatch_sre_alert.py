@@ -45,6 +45,7 @@ def main():
                     "description": "Live operational intelligence test dispatched via CI/CD pipeline. Validating Prometheus Alertmanager webhook routing, Gemini 1.5 Flash RCA, and Slack ChatOps dispatch."
                 },
                 "startsAt": now_iso,
+                "endsAt": "0001-01-01T00:00:00Z",
                 "generatorURL": "http://prometheus-operated.monitoring.svc.cluster.local:9090",
                 "fingerprint": "1234567890abcdef"
             }
