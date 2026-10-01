@@ -6,11 +6,11 @@ on:
       alert_name:
         description: 'Synthetic SRE Alert to simulate'
         required: true
-        default: 'FrontendHTTP5xxRateHigh'
+        default: 'ConsumerTriageStalled'
         type: choice
         options:
-          - FrontendHTTP5xxRateHigh
           - ConsumerTriageStalled
+          - FrontendHTTP5xxRateHigh
           - ContainerMemoryNearLimit
       severity:
         description: 'Alert Severity'
@@ -79,7 +79,7 @@ jobs:
 
       - name: Send Synthetic Incident to In-Cluster Robusta & Alertmanager
         run: |
-          ALERT_NAME="${{ github.event.inputs.alert_name || 'FrontendHTTP5xxRateHigh' }}"
+          ALERT_NAME="${{ github.event.inputs.alert_name || 'ConsumerTriageStalled' }}"
           SEVERITY="${{ github.event.inputs.severity || 'critical' }}"
           echo "==> Dispatching simulated incident '${ALERT_NAME}' with severity '${SEVERITY}'..."
 
@@ -88,12 +88,82 @@ jobs:
             echo "::error::Robusta runner pod not found in namespace robusta!"
             exit 1
           fi
+          echo "==> Target Robusta runner pod: ${ROBUSTA_POD}"
 
-          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          kubectl exec -i -n robusta "$ROBUSTA_POD" -- python3 - "$ALERT_NAME" "$SEVERITY" << 'EOF'
+import sys, json, urllib.request, urllib.error
+from datetime import datetime, timezone
 
-          PAYLOAD="[{\"status\":\"firing\",\"labels\":{\"alertname\":\"${ALERT_NAME}\",\"severity\":\"${SEVERITY}\",\"namespace\":\"omnipulse-dev\",\"pod\":\"frontend-simulated\",\"target_workload\":\"frontend\"},\"annotations\":{\"summary\":\"Simulated SRE Incident: ${ALERT_NAME}\",\"description\":\"Live operational intelligence test dispatched via CI/CD pipeline. Validating Prometheus Alertmanager webhook routing, Gemini 1.5 Flash RCA, and Slack ChatOps dispatch.\"},\"startsAt\":\"${TIMESTAMP}\",\"generatorURL\":\"http://prometheus-operated.monitoring.svc.cluster.local:9090\"}]"
+alert_name = sys.argv[1]
+severity = sys.argv[2]
+now_iso = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
-          kubectl exec -n robusta "$ROBUSTA_POD" -- python3 -c "import sys, urllib.request; req = urllib.request.Request('http://127.0.0.1:5000/api/alerts', data=sys.argv[1].encode('utf-8'), headers={'Content-Type': 'application/json'}); print('Robusta Webhook Response Status:', urllib.request.urlopen(req).status)" "$PAYLOAD"
+payload = {
+    "version": "4",
+    "groupKey": f"{{}}:{{alertname=\"{alert_name}\"}}",
+    "truncatedAlerts": 0,
+    "status": "firing",
+    "receiver": "robusta-webhook",
+    "groupLabels": {
+        "alertname": alert_name,
+        "namespace": "omnipulse-dev"
+    },
+    "commonLabels": {
+        "alertname": alert_name,
+        "severity": severity,
+        "namespace": "omnipulse-dev"
+    },
+    "commonAnnotations": {
+        "summary": f"Simulated SRE Incident: {alert_name}",
+        "description": "Live operational intelligence test dispatched via CI/CD pipeline."
+    },
+    "externalURL": "http://alertmanager-operated.monitoring.svc.cluster.local:9093",
+    "alerts": [
+        {
+            "status": "firing",
+            "labels": {
+                "alertname": alert_name,
+                "severity": severity,
+                "namespace": "omnipulse-dev",
+                "pod": "frontend-simulated",
+                "target_workload": "frontend"
+            },
+            "annotations": {
+                "summary": f"Simulated SRE Incident: {alert_name}",
+                "description": "Live operational intelligence test dispatched via CI/CD pipeline. Validating Prometheus Alertmanager webhook routing, Gemini 1.5 Flash RCA, and Slack ChatOps dispatch."
+            },
+            "startsAt": now_iso,
+            "generatorURL": "http://prometheus-operated.monitoring.svc.cluster.local:9090",
+            "fingerprint": "1234567890abcdef"
+        }
+    ]
+}
+
+data = json.dumps(payload).encode('utf-8')
+req = urllib.request.Request(
+    'http://127.0.0.1:5000/api/alerts',
+    data=data,
+    headers={'Content-Type': 'application/json'}
+)
+
+try:
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        print(f"==> Robusta Webhook Response: {resp.status} {resp.reason}")
+        body = resp.read().decode('utf-8', errors='replace')
+        if body:
+            print(f"==> Response details: {body}")
+except urllib.error.HTTPError as e:
+    print(f"::error::Robusta Webhook returned HTTP {e.code}: {e.reason}", file=sys.stderr)
+    try:
+        err_body = e.read().decode('utf-8', errors='replace')
+        print(f"==> Error details: {err_body}", file=sys.stderr)
+    except Exception:
+        pass
+    sys.exit(1)
+except Exception as e:
+    print(f"::error::Unexpected exception: {e}", file=sys.stderr)
+    sys.exit(1)
+EOF
 
           echo "==> Synthetic incident dispatched successfully!"
           echo "==> Check your Slack channel: #operational-intelligence"
