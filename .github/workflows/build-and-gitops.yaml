@@ -7,6 +7,7 @@ on:
       - 'src/**'
       - 'k8s/**'
       - 'gitops/**'
+      - 'scripts/**'
       - '.github/workflows/build-and-gitops.yaml'
   workflow_dispatch:
     inputs:
@@ -107,3 +108,12 @@ jobs:
           echo "==> Waiting for emailservice rollout to complete..."
           kubectl rollout status deployment/emailservice -n omnipulse-${ENV_NAME} --timeout=360s || (echo "==> Rollout progressing under GKE Autopilot node autoscaling; current status:" && kubectl get pods -n omnipulse-${ENV_NAME} -l app=emailservice)
           echo "==> Done! GitOps applications synced successfully via GitHub Actions."
+
+      - name: Automatically Record Remediation Event to BigQuery Audit Log
+        run: |
+          echo "==> Automatically recording SRE remediation event to BigQuery..."
+          ROBUSTA_POD=$(kubectl get pods -n robusta -l app=robusta-runner -o jsonpath='{.items[0].metadata.name}')
+          if [ -n "$ROBUSTA_POD" ]; then
+            kubectl exec -i -n robusta "$ROBUSTA_POD" -- python3 - "${GITHUB_SHA}" "${ENV_NAME}" "emailservice" "GITOPS_PROACTIVE_REMEDIATION" < scripts/record_bigquery_audit.py
+          fi
+          echo "==> BigQuery audit logging complete."
