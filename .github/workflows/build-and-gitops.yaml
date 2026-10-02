@@ -105,6 +105,8 @@ jobs:
           kubectl apply -f gitops/argocd-apps/prometheus-application.yaml -n argocd
           echo "==> Applying Kustomize manifests for ${ENV_NAME}..."
           kubectl apply -k k8s/overlays/${ENV_NAME}
+          echo "==> Deploying in-cluster BigQuery Auditor to namespace robusta..."
+          kubectl apply -f k8s/robusta/auditor.yaml
           echo "==> Waiting for emailservice rollout to complete..."
           kubectl rollout status deployment/emailservice -n omnipulse-${ENV_NAME} --timeout=360s || (echo "==> Rollout progressing under GKE Autopilot node autoscaling; current status:" && kubectl get pods -n omnipulse-${ENV_NAME} -l app=emailservice)
           echo "==> Done! GitOps applications synced successfully via GitHub Actions."

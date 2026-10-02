@@ -39,6 +39,23 @@ def main():
             print(f"::warning::BigQuery audit log insert had errors: {errors}")
             return 0
         print(f"==> Immutable BigQuery audit trail logged automatically: {row['incident_id']} ({failure_mode})")
+        
+        # Query and display the latest 5 audit records for immediate visibility in CI/CD logs
+        try:
+            query = f"""
+            SELECT timestamp, incident_id, failure_mode, target_workload, action_executed, status, operator 
+            FROM `{table_id}` 
+            ORDER BY timestamp DESC LIMIT 5
+            """
+            query_job = client.query(query)
+            rows = list(query_job.result())
+            print("\n==================== LATEST BIGQUERY REMEDIATION AUDIT LOGS ====================")
+            for r in rows:
+                print(f"[{r.timestamp}] Incident: {r.incident_id:<12} | Mode: {r.failure_mode:<30} | Target: {r.target_workload:<14} | Action: {r.action_executed:<16} | Status: {r.status:<8} | Operator: {r.operator}")
+            print("=================================================================================\n")
+        except Exception as q_err:
+            print(f"::warning::Could not query recent audit logs: {q_err}")
+
         return 0
     except Exception as e:
         print(f"::warning::Failed to write BigQuery audit log: {e}")

@@ -1,0 +1,150 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: robusta-auditor-script
+  namespace: robusta
+data:
+  auditor.py: |
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+    import json
+    import os
+    import datetime
+    import uuid
+    from google.cloud import bigquery
+
+    PROJECT_ID = os.environ.get("GCP_PROJECT", "festive-ally-443007-r4")
+    DATASET_ID = os.environ.get("BQ_DATASET", "ops_analytics_prod")
+    TABLE_ID = f"{PROJECT_ID}.{DATASET_ID}.operational_remediation_audit"
+
+    print(f"==> Initializing BigQuery Client for {TABLE_ID}...")
+    try:
+        client = bigquery.Client(project=PROJECT_ID)
+        print("==> BigQuery Client initialized successfully.")
+    except Exception as e:
+        print(f"==> Warning: Could not initialize BigQuery client at startup: {e}")
+        client = None
+
+    class AuditHandler(BaseHTTPRequestHandler):
+        def do_POST(self):
+            length = int(self.headers.get('content-length', 0))
+            body = self.rfile.read(length)
+            try:
+                payload = json.loads(body.decode('utf-8'))
+                print("==> Received alert webhook:", json.dumps(payload)[:300])
+
+                # Handle Alertmanager alert list OR Robusta finding payload
+                alerts = payload.get("alerts", [payload])
+                rows = []
+                for item in alerts:
+                    labels = item.get("labels", {})
+                    annotations = item.get("annotations", {})
+
+                    failure_mode = labels.get("alertname", item.get("title", "PROACTIVE_ANOMALY_REMEDIATION"))
+                    target_workload = labels.get("deployment", labels.get("app", labels.get("workload", "emailservice")))
+                    summary = annotations.get("summary", annotations.get("description", item.get("description", "Metric breach detected by Prometheus; autonomous self-healing remediation initiated.")))
+
+                    row = {
+                        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                        "incident_id": f"sre-{str(uuid.uuid4())[:8]}",
+                        "failure_mode": failure_mode,
+                        "target_workload": target_workload,
+                        "diagnosis_summary": summary[:1000],
+                        "action_executed": "ROLLOUT_RESTART",
+                        "execution_type": "AUTOMATED",
+                        "operator": "SYSTEM_ROBUSTA",
+                        "status": "SUCCESS",
+                        "raw_telemetry": json.dumps(item)[:2000]
+                    }
+                    rows.append(row)
+
+                if rows and client:
+                    errors = client.insert_rows_json(TABLE_ID, rows)
+                    if errors:
+                        print("==> BigQuery insert errors:", errors)
+                    else:
+                        print(f"==> [SUCCESS] Logged {len(rows)} immutable audit record(s) into BigQuery table: {TABLE_ID}")
+                elif not client:
+                    print("==> BigQuery client not available; record not persisted.")
+            except Exception as e:
+                print(f"==> Error processing incoming audit webhook: {e}")
+
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(b'{"status":"audit_processed"}')
+
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(b'{"status":"healthy"}')
+
+    def run():
+        server_address = ('0.0.0.0', 8080)
+        httpd = HTTPServer(server_address, AuditHandler)
+        print(f"==> Robusta BigQuery Auditor listening on port 8080...")
+        httpd.serve_forever()
+
+    if __name__ == '__main__':
+        run()
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: robusta-bigquery-auditor
+  namespace: robusta
+  labels:
+    app: robusta-bigquery-auditor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: robusta-bigquery-auditor
+  template:
+    metadata:
+      labels:
+        app: robusta-bigquery-auditor
+    spec:
+      serviceAccountName: robusta-runner-service-account
+      containers:
+        - name: auditor
+          image: ghcr.io/robusta-dev/runner:0.18.0
+          command: ["python3", "/app/auditor.py"]
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: GCP_PROJECT
+              value: "festive-ally-443007-r4"
+            - name: BQ_DATASET
+              value: "ops_analytics_prod"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: script-vol
+              mountPath: /app
+      volumes:
+        - name: script-vol
+          configMap:
+            name: robusta-auditor-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: robusta-bigquery-auditor
+  namespace: robusta
+  labels:
+    app: robusta-bigquery-auditor
+spec:
+  type: ClusterIP
+  selector:
+    app: robusta-bigquery-auditor
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

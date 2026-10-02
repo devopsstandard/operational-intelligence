@@ -114,6 +114,8 @@ spec:
                 webhook_configs:
                   - url: 'http://robusta-runner.robusta.svc.cluster.local/api/alerts'
                     send_resolved: true
+                  - url: 'http://robusta-bigquery-auditor.robusta.svc.cluster.local:8080/audit'
+                    send_resolved: true
 
         # 4. Kube-State-Metrics (Cluster State Telemetry)
         kubeStateMetrics:
