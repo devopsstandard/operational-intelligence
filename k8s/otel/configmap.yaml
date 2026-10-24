@@ -36,12 +36,11 @@ data:
         metric_expiration: 180s
 
       google_cloud_storage:
+        project_id: festive-ally-443007-r4
         bucket:
           name: omnipulse-telemetry-archive-dev
-          project_id: festive-ally-443007-r4
-          region: us-central1
-          reuse_if_exists: true
-          file_prefix: logs
+        file_prefix: logs
+        compression: gzip
 
       debug:
         verbosity: basic

@@ -1,12 +1,3 @@
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: grafana-cert-v1
-  namespace: monitoring
-spec:
-  domains:
-    - grafana.devopsstandard.name.ng
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

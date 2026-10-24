@@ -139,6 +139,14 @@ spec:
               enabled: false
             datasources:
               enabled: false
+          additionalDataSources:
+            - name: Prometheus
+              type: prometheus
+              url: http://prometheus-kube-prometheus-stack-prometheus.monitoring:9090
+              access: proxy
+              isDefault: true
+              jsonData:
+                timeInterval: 15s
           service:
             annotations:
               cloud.google.com/backend-config: '{"default": "grafana-backendconfig"}'

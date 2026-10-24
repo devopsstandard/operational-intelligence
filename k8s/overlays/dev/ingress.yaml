@@ -1,12 +1,3 @@
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: dev-frontend-cert-v3
-  namespace: omnipulse-dev
-spec:
-  domains:
-    - dev.devopsstandard.name.ng
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

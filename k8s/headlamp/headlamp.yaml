@@ -68,15 +68,6 @@ spec:
     port: 80
     targetPort: 4466
 ---
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: headlamp-cert-v2
-  namespace: headlamp
-spec:
-  domains:
-    - headlamp.devopsstandard.name.ng
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

@@ -1,12 +1,3 @@
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: argocd-server-cert-v2
-  namespace: argocd
-spec:
-  domains:
-    - argocd.devopsstandard.name.ng
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
