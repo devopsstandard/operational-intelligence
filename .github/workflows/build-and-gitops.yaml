@@ -101,12 +101,24 @@ jobs:
 
       - name: Sync GitOps Applications & Clean Test Workloads
         run: |
+          echo "==> Ensuring required namespaces exist..."
+          kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace opentelemetry --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace omnipulse-${ENV_NAME} --dry-run=client -o yaml | kubectl apply -f -
+
           echo "==> Syncing all GitOps application manifests to Argo CD..."
-          kubectl apply -f gitops/argocd-apps/prometheus-application.yaml -n argocd
-          echo "==> Applying Kustomize manifests for ${ENV_NAME}..."
+          kubectl apply -f gitops/argocd-apps/ -n argocd
+
+          echo "==> Applying OpenTelemetry & Grafana Ingress manifests..."
+          kubectl apply -k k8s/otel
+          kubectl apply -k k8s/grafana-ingress
+
+          echo "==> Applying Kustomize microservices manifests for ${ENV_NAME}..."
           kubectl apply -k k8s/overlays/${ENV_NAME}
+
           echo "==> Deploying in-cluster BigQuery Auditor to namespace robusta..."
           kubectl apply -f k8s/robusta/auditor.yaml
+
           echo "==> Waiting for emailservice rollout to complete..."
           kubectl rollout status deployment/emailservice -n omnipulse-${ENV_NAME} --timeout=360s || (echo "==> Rollout progressing under GKE Autopilot node autoscaling; current status:" && kubectl get pods -n omnipulse-${ENV_NAME} -l app=emailservice)
           echo "==> Done! GitOps applications synced successfully via GitHub Actions."
