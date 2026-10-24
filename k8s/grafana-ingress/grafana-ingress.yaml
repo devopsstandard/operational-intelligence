@@ -15,7 +15,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "boutique-grafana-ip-dev"
-    networking.gke.io/managed-certificates: "grafana-cert-v1"
+    # networking.gke.io/managed-certificates: "grafana-cert-v1"
 spec:
   rules:
   - host: grafana.devopsstandard.name.ng

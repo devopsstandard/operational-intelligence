@@ -15,7 +15,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "boutique-argocd-ip-dev"
-    networking.gke.io/managed-certificates: "argocd-server-cert-v2"
+    # networking.gke.io/managed-certificates: "argocd-server-cert-v2"
 spec:
   rules:
   - host: argocd.devopsstandard.name.ng

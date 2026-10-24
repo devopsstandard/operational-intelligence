@@ -15,7 +15,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "boutique-frontend-ip-dev"
-    networking.gke.io/managed-certificates: "dev-frontend-cert-v3"
+    # networking.gke.io/managed-certificates: "dev-frontend-cert-v3"
 spec:
   rules:
   - host: dev.devopsstandard.name.ng
