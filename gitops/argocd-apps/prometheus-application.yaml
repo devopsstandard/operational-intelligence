@@ -132,6 +132,9 @@ spec:
         grafana:
           enabled: true
           adminPassword: "prom-operator"
+          service:
+            annotations:
+              cloud.google.com/backend-config: '{"default": "grafana-backendconfig"}'
           resources:
             requests:
               cpu: 100m
