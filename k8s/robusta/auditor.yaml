@@ -108,7 +108,7 @@ spec:
       serviceAccountName: robusta-runner-service-account
       containers:
         - name: auditor
-          image: ghcr.io/robusta-dev/runner:0.18.0
+          image: robustadev/robusta-runner:0.18.0
           command: ["python3", "/app/auditor.py"]
           ports:
             - containerPort: 8080
