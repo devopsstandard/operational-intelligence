@@ -12,10 +12,17 @@ spec:
     spec:
       containers:
       - name: server
-        image: us-central1-docker.pkg.dev/festive-ally-443007-r4/boutique-containers-dev/frontend:dev
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/frontend:v0.10.5
         env:
         - name: ENV_PLATFORM
           value: "gke-dev"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-external
+spec:
+  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
