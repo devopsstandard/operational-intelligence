@@ -132,6 +132,8 @@ spec:
         grafana:
           enabled: true
           adminPassword: "prom-operator"
+          initChownData:
+            enabled: false
           service:
             annotations:
               cloud.google.com/backend-config: '{"default": "grafana-backendconfig"}'
