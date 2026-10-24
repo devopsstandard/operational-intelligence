@@ -85,7 +85,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "boutique-ingress-ip-dev"
-    networking.gke.io/managed-certificates: "headlamp-cert-v2"
+    # networking.gke.io/managed-certificates: "headlamp-cert-v2"
 spec:
   rules:
   - host: headlamp.devopsstandard.name.ng
