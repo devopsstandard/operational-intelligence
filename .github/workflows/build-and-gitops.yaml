@@ -114,6 +114,7 @@ jobs:
 
           echo "==> Applying OpenTelemetry & Grafana Ingress manifests..."
           kubectl apply -k k8s/otel
+          kubectl rollout restart deployment otel-collector -n opentelemetry || true
           kubectl apply -k k8s/grafana-ingress
 
           echo "==> Applying Kustomize microservices manifests for ${ENV_NAME}..."
@@ -121,6 +122,7 @@ jobs:
 
           echo "==> Deploying in-cluster BigQuery Auditor to namespace robusta..."
           kubectl apply -f k8s/robusta/auditor.yaml
+          kubectl rollout restart deployment robusta-bigquery-auditor -n robusta || true
 
           echo "==> Waiting for emailservice rollout to complete..."
           kubectl rollout status deployment/emailservice -n omnipulse-${ENV_NAME} --timeout=360s || (echo "==> Rollout progressing under GKE Autopilot node autoscaling; current status:" && kubectl get pods -n omnipulse-${ENV_NAME} -l app=emailservice)
