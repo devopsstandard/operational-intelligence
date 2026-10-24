@@ -35,9 +35,13 @@ data:
         send_timestamps: true
         metric_expiration: 180s
 
-      googlecloudstorage:
-        bucket: omnipulse-telemetry-archive-dev
-        timeout: 20s
+      google_cloud_storage:
+        bucket:
+          name: omnipulse-telemetry-archive-dev
+          project_id: festive-ally-443007-r4
+          region: us-central1
+          reuse_if_exists: true
+          file_prefix: logs
 
       debug:
         verbosity: basic
@@ -56,11 +60,11 @@ data:
         logs:
           receivers: [otlp]
           processors: [memory_limiter, batch]
-          exporters: [googlecloudstorage, debug]
+          exporters: [google_cloud_storage, debug]
         traces:
           receivers: [otlp]
           processors: [memory_limiter, batch]
-          exporters: [googlecloudstorage, debug]
+          exporters: [google_cloud_storage, debug]
       telemetry:
         logs:
           level: info
