@@ -68,9 +68,14 @@ Operational Intelligence/
 │       ├── app-of-apps.yaml        # Root App-of-Apps controller manifest
 │       ├── dev-application.yaml    # Target: k8s/overlays/dev (omnipulse-dev namespace)
 │       ├── prod-application.yaml   # Target: k8s/overlays/prod (omnipulse-prod namespace)
+│       ├── prometheus-application.yaml # Target: kube-prometheus-stack in monitoring
+│       ├── otel-application.yaml   # Target: OpenTelemetry Collector in opentelemetry
+│       ├── grafana-ingress-application.yaml # Target: Grafana Ingress & ManagedCertificate
 │       └── robusta-application.yaml# Target: Robusta OSS in namespace robusta
 ├── k8s/
-│   ├── base/                       # 12 polyglot microservice deployments & services
+│   ├── base/                       # 12 polyglot microservice deployments & services (OTel instrumented)
+│   ├── otel/                       # OpenTelemetry Collector (OTLP -> Prometheus & GCS Archive)
+│   ├── grafana-ingress/            # GCE Ingress & ManagedCertificate for Grafana (grafana.devopsstandard.name.ng)
 │   ├── headlamp/                   # Headlamp cluster administration dashboard
 │   ├── argocd-ingress/             # GCE Ingress & ManagedCertificate for Argo CD UI
 │   ├── overlays/                   # Environment overlays (dev, prod)

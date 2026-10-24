@@ -1,4 +1,4 @@
-﻿apiVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: shippingservice
@@ -36,6 +36,10 @@ spec:
           value: "50051"
         - name: DISABLE_PROFILER
           value: "1"
+        - name: COLLECTOR_SERVICE_ADDR
+          value: "otel-collector.opentelemetry.svc.cluster.local:4317"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector.opentelemetry.svc.cluster.local:4317"
         readinessProbe:
           periodSeconds: 5
           grpc:

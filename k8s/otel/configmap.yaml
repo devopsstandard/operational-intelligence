@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+  namespace: opentelemetry
+  labels:
+    app.kubernetes.io/name: otel-collector
+    app.kubernetes.io/part-of: omnipulse-observability
+data:
+  collector.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+
+    processors:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 75
+        spike_limit_percentage: 20
+      batch:
+        send_batch_size: 512
+        timeout: 10s
+      resourcedetection:
+        detectors: [gcp, env]
+        timeout: 2s
+
+    exporters:
+      prometheus:
+        endpoint: 0.0.0.0:8889
+        namespace: omnipulse
+        send_timestamps: true
+        metric_expiration: 180s
+
+      googlecloudstorage:
+        bucket: omnipulse-telemetry-archive-dev
+        timeout: 20s
+
+      debug:
+        verbosity: basic
+
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+
+    service:
+      extensions: [health_check]
+      pipelines:
+        metrics:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [prometheus, debug]
+        logs:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [googlecloudstorage, debug]
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [googlecloudstorage, debug]
+      telemetry:
+        logs:
+          level: info

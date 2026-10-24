@@ -1,0 +1,30 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: grafana-cert-v1
+  namespace: monitoring
+spec:
+  domains:
+    - grafana.devopsstandard.name.ng
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "boutique-grafana-ip-dev"
+    networking.gke.io/managed-certificates: "grafana-cert-v1"
+spec:
+  rules:
+  - host: grafana.devopsstandard.name.ng
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: kube-prometheus-stack-grafana
+            port:
+              number: 80

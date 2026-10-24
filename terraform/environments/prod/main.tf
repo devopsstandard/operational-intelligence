@@ -102,6 +102,12 @@ resource "google_compute_global_address" "ingress_ip" {
   project     = var.project_id
 }
 
+resource "google_compute_global_address" "grafana_ip" {
+  name        = "boutique-grafana-ip-prod"
+  description = "Static IP for Grafana (grafana.devopsstandard.name.ng)"
+  project     = var.project_id
+}
+
 # 7. Robusta OSS Automated Operational Intelligence Engine (Incident Triage & HITL Remediation)
 module "robusta" {
   count            = var.enable_robusta ? 1 : 0
@@ -116,4 +122,65 @@ module "robusta" {
   gemini_model     = "gemini-1.5-flash"
 
   depends_on = [module.gke]
+}
+
+# 8. OpenTelemetry (OTel) Telemetry Cold-Storage Archive Bucket
+resource "google_storage_bucket" "telemetry_archive" {
+  name                        = "omnipulse-telemetry-archive-${var.environment}"
+  location                    = var.region
+  project                     = var.project_id
+  uniform_bucket_level_access = true
+  force_destroy               = false
+
+  lifecycle_rule {
+    condition {
+      age = 30 # Transition to Nearline after 30 days
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 90 # Transition to Coldline after 90 days
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "COLDLINE"
+    }
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 365 # Transition to Archive after 1 year
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "ARCHIVE"
+    }
+  }
+}
+
+# 9. Dedicated Service Account for OpenTelemetry Collector
+resource "google_service_account" "otel_collector" {
+  account_id   = "otel-collector-sa-${var.environment}"
+  display_name = "OpenTelemetry Collector SA (${var.environment})"
+  project      = var.project_id
+  description  = "Service account for OTel collector to write logs and telemetry to GCS archive"
+}
+
+# Grant OTel SA permissions on the telemetry archive bucket
+resource "google_storage_bucket_iam_member" "otel_storage_admin" {
+  bucket = google_storage_bucket.telemetry_archive.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.otel_collector.email}"
+}
+
+# Keyless Workload Identity Federation: bind K8s SA to GCP SA
+resource "google_service_account_iam_member" "otel_workload_identity" {
+  service_account_id = google_service_account.otel_collector.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[opentelemetry/otel-collector-sa]"
 }
