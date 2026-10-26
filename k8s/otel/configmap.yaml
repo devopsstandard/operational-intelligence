@@ -40,8 +40,9 @@ data:
           name: omnipulse-telemetry-archive-dev
           project_id: festive-ally-443007-r4
           region: us-central1
-        file_prefix: logs
-        compression: gzip
+          file_prefix: logs
+          compression: gzip
+          reuse_if_exists: true
 
       debug:
         verbosity: basic
