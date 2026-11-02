@@ -10,19 +10,70 @@ data:
     import os
     import datetime
     import uuid
-    from google.cloud import bigquery
+    import urllib.request
+    import urllib.error
+
+    try:
+        from google.cloud import bigquery
+    except ImportError:
+        bigquery = None
 
     PROJECT_ID = os.environ.get("GCP_PROJECT", "festive-ally-443007-r4")
     DATASET_ID = os.environ.get("BQ_DATASET", "ops_analytics_dev")
-    TABLE_ID = f"{PROJECT_ID}.{DATASET_ID}.operational_remediation_audit"
+    TABLE_NAME = "operational_remediation_audit"
+    TABLE_ID = f"{PROJECT_ID}.{DATASET_ID}.{TABLE_NAME}"
 
-    print(f"==> Initializing BigQuery Client for {TABLE_ID}...")
-    try:
-        client = bigquery.Client(project=PROJECT_ID)
-        print("==> BigQuery Client initialized successfully.")
-    except Exception as e:
-        print(f"==> Warning: Could not initialize BigQuery client at startup: {e}")
-        client = None
+    print(f"==> Initializing BigQuery Auditor for {TABLE_ID}...")
+    client = None
+    if bigquery is not None:
+        try:
+            client = bigquery.Client(project=PROJECT_ID)
+            print("==> Google Cloud BigQuery client initialized.")
+        except Exception as e:
+            print(f"==> Notice: BigQuery SDK client init deferred: {e}")
+
+    def get_metadata_access_token():
+        try:
+            req = urllib.request.Request(
+                "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token",
+                headers={"Metadata-Flavor": "Google"}
+            )
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                data = json.loads(resp.read().decode('utf-8'))
+                return data.get("access_token")
+        except Exception as e:
+            print(f"==> Notice: Could not fetch metadata token: {e}")
+            return None
+
+    def insert_records_rest(rows):
+        token = get_metadata_access_token()
+        if not token:
+            print("==> Warning: No access token available for BigQuery REST API insert.")
+            return False
+        url = f"https://bigquery.googleapis.com/bigquery/v2/projects/{PROJECT_ID}/datasets/{DATASET_ID}/tables/{TABLE_NAME}/insertAll"
+        body = {
+            "kind": "bigquery#tableDataInsertAllRequest",
+            "rows": [{"insertId": str(uuid.uuid4()), "json": r} for r in rows]
+        }
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(body).encode('utf-8'),
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json"
+            }
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                res = json.loads(resp.read().decode('utf-8'))
+                if "insertErrors" in res and res["insertErrors"]:
+                    print("==> BigQuery REST insert errors:", res["insertErrors"])
+                    return False
+                print(f"==> [SUCCESS] Persisted {len(rows)} audit row(s) to BigQuery via REST API.")
+                return True
+        except Exception as e:
+            print(f"==> BigQuery REST insert error: {e}")
+            return False
 
     class AuditHandler(BaseHTTPRequestHandler):
         def do_POST(self):
@@ -32,7 +83,6 @@ data:
                 payload = json.loads(body.decode('utf-8'))
                 print("==> Received alert webhook:", json.dumps(payload)[:300])
 
-                # Handle Alertmanager alert list OR Robusta finding payload
                 alerts = payload.get("alerts", [payload])
                 rows = []
                 for item in alerts:
@@ -57,14 +107,19 @@ data:
                     }
                     rows.append(row)
 
-                if rows and client:
-                    errors = client.insert_rows_json(TABLE_ID, rows)
-                    if errors:
-                        print("==> BigQuery insert errors:", errors)
-                    else:
-                        print(f"==> [SUCCESS] Logged {len(rows)} immutable audit record(s) into BigQuery table: {TABLE_ID}")
-                elif not client:
-                    print("==> BigQuery client not available; record not persisted.")
+                persisted = False
+                if client and rows:
+                    try:
+                        errs = client.insert_rows_json(TABLE_ID, rows)
+                        if not errs:
+                            persisted = True
+                            print(f"==> [SUCCESS] Logged {len(rows)} audit record(s) via SDK.")
+                    except Exception:
+                        pass
+                
+                if not persisted and rows:
+                    insert_records_rest(rows)
+
             except Exception as e:
                 print(f"==> Error processing incoming audit webhook: {e}")
 
@@ -79,10 +134,13 @@ data:
             self.end_headers()
             self.wfile.write(b'{"status":"healthy"}')
 
+        def log_message(self, format, *args):
+            return  # Suppress default noisy access logs
+
     def run():
         server_address = ('0.0.0.0', 8080)
         httpd = HTTPServer(server_address, AuditHandler)
-        print(f"==> Robusta BigQuery Auditor listening on port 8080...")
+        print("==> Robusta BigQuery Auditor listening on port 8080...")
         httpd.serve_forever()
 
     if __name__ == '__main__':
@@ -104,6 +162,8 @@ spec:
     metadata:
       labels:
         app: robusta-bigquery-auditor
+      annotations:
+        checksum/config: "v2-rest-resilient"
     spec:
       serviceAccountName: robusta-runner-service-account
       containers:
@@ -120,11 +180,11 @@ spec:
               value: "ops_analytics_dev"
           resources:
             requests:
-              cpu: 250m
-              memory: 512Mi
+              cpu: 100m
+              memory: 128Mi
             limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: 250m
+              memory: 256Mi
           volumeMounts:
             - name: script-vol
               mountPath: /opt/auditor
