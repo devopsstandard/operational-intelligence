@@ -1,5 +1,5 @@
-# GKE Autopilot Dev Workloads Patch
-# Standard On-Demand compute (utilizes 24 available vCPUs and 6 free instances in project)
+# OmniPulse Dev Workloads Patch
+# Standard Dedicated Compute (3 nodes e2-standard-4)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: server
-        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/frontend:v0.10.5
+        image: us-central1-docker.pkg.dev/festive-ally-443007-r4/omnipulse-containers-dev/frontend:dev
         env:
         - name: ENV_PLATFORM
           value: "gke-dev"

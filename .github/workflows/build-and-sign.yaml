@@ -195,5 +195,9 @@ jobs:
           gcloud container clusters get-credentials omnipulse-gke-cluster-${ENV_NAME} --region=${GCP_REGION} --project=${GCP_PROJECT}
           
           echo "==> Rolling out updated image to deployment/${{ matrix.service }} in namespace omnipulse-${ENV_NAME}..."
-          kubectl set image deployment/${{ matrix.service }} server=${{ env.AR_REPOSITORY }}/${{ matrix.service }}:${{ env.ENV_NAME }} -n omnipulse-${ENV_NAME} || true
+          if [ "${{ matrix.service }}" = "loadgenerator" ]; then
+            kubectl set image deployment/${{ matrix.service }} main=${{ env.AR_REPOSITORY }}/${{ matrix.service }}:${{ env.ENV_NAME }} -n omnipulse-${ENV_NAME} || true
+          else
+            kubectl set image deployment/${{ matrix.service }} server=${{ env.AR_REPOSITORY }}/${{ matrix.service }}:${{ env.ENV_NAME }} -n omnipulse-${ENV_NAME} || true
+          fi
           kubectl rollout restart deployment/${{ matrix.service }} -n omnipulse-${ENV_NAME} || true

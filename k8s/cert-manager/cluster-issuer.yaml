@@ -33,3 +33,4 @@ spec:
     - http01:
         ingress:
           class: gce
+
