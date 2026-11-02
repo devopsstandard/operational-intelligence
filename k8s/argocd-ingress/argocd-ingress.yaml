@@ -6,8 +6,13 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "omnipulse-argocd-ip-dev"
-    # networking.gke.io/managed-certificates: "argocd-server-cert-v2"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    acme.cert-manager.io/http01-edit-in-place: "true"
 spec:
+  tls:
+  - hosts:
+    - argocd.devopsstandard.name.ng
+    secretName: argocd-server-tls-cert
   rules:
   - host: argocd.devopsstandard.name.ng
     http:

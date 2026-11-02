@@ -6,8 +6,13 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "omnipulse-frontend-ip-dev"
-    # networking.gke.io/managed-certificates: "dev-frontend-cert-v3"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    acme.cert-manager.io/http01-edit-in-place: "true"
 spec:
+  tls:
+  - hosts:
+    - dev.devopsstandard.name.ng
+    secretName: dev-frontend-tls-cert
   rules:
   - host: dev.devopsstandard.name.ng
     http:

@@ -108,7 +108,8 @@ jobs:
           echo "==> Syncing all GitOps application manifests to Argo CD..."
           kubectl apply -f gitops/argocd-apps/ -n argocd
 
-          echo "==> Applying OpenTelemetry & Grafana Ingress manifests..."
+          echo "==> Applying cert-manager ClusterIssuers, OpenTelemetry & Grafana Ingress manifests..."
+          kubectl apply -k k8s/cert-manager || true
           kubectl apply -k k8s/otel
           kubectl rollout restart deployment otel-collector -n opentelemetry || true
           kubectl apply -k k8s/grafana-ingress

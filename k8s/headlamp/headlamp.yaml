@@ -76,8 +76,13 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "omnipulse-ingress-ip-dev"
-    # networking.gke.io/managed-certificates: "headlamp-cert-v2"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    acme.cert-manager.io/http01-edit-in-place: "true"
 spec:
+  tls:
+  - hosts:
+    - headlamp.devopsstandard.name.ng
+    secretName: headlamp-tls-cert
   rules:
   - host: headlamp.devopsstandard.name.ng
     http:
