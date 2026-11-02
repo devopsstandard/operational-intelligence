@@ -31,7 +31,6 @@ resource "google_container_cluster" "primary" {
   project             = var.project_id
   network             = var.network_id
   subnetwork          = var.subnet_id
-  enable_autopilot    = false
   deletion_protection = false
 
   # Remove default node pool immediately to manage nodes through explicit node pool resource
