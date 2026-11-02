@@ -37,6 +37,18 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
+  # Explicitly configure default initial node with target machine_type to avoid stockouts on e2-medium
+  node_config {
+    machine_type    = var.machine_type
+    disk_size_gb    = var.disk_size_gb
+    disk_type       = "pd-balanced"
+    service_account = google_service_account.gke_nodes_sa.email
+
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+
   # VPC-Native IP Allocation
   ip_allocation_policy {
     cluster_secondary_range_name  = var.pods_secondary_range_name
@@ -95,7 +107,7 @@ resource "google_container_cluster" "primary" {
   }
 }
 
-# Dedicated 3-Node Pool for OmniPulse Workloads (e2-standard-4)
+# Dedicated 3-Node Pool for OmniPulse Workloads (e2-standard-4 in us-central1-c)
 resource "google_container_node_pool" "primary_nodes" {
   name           = "omnipulse-node-pool-${var.environment}"
   location       = var.cluster_location != null ? var.cluster_location : var.region

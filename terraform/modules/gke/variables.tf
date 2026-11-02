@@ -10,8 +10,8 @@ variable "region" {
 
 variable "cluster_location" {
   type        = string
-  description = "Cluster location (zone or region, e.g. us-central1-a)"
-  default     = "us-central1-a"
+  description = "Cluster location (zone or region, e.g. us-central1-c)"
+  default     = "us-central1-c"
 }
 
 variable "environment" {

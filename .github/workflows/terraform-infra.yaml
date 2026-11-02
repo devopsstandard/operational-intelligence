@@ -31,7 +31,7 @@ permissions:
 
 env:
   GCP_REGION: us-central1
-  GCP_ZONE: us-central1-a
+  GCP_ZONE: us-central1-c
 
 jobs:
   terraform-run:

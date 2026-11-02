@@ -12,7 +12,7 @@ variable "region" {
 variable "cluster_zone" {
   type        = string
   description = "GCP Zone for GKE Cluster (e.g. us-central1-a)"
-  default     = "us-central1-a"
+  default     = "us-central1-c"
 }
 
 variable "github_repo" {
