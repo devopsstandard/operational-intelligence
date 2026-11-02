@@ -40,6 +40,7 @@ permissions:
 
 env:
   GCP_REGION: us-central1
+  GCP_ZONE: us-central1-a
 
 jobs:
   simulate-and-verify:
@@ -91,7 +92,7 @@ jobs:
         uses: google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: ${{ env.GKE_CLUSTER }}
-          location: ${{ env.GCP_REGION }}
+          location: ${{ env.GCP_ZONE }}
 
       - name: Ensure In-Cluster BigQuery Auditor is Active
         run: |

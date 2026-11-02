@@ -27,7 +27,7 @@ resource "google_project_iam_member" "node_ar_reader" {
 # Standard VPC-Native GKE Cluster
 resource "google_container_cluster" "primary" {
   name                = "omnipulse-gke-cluster-${var.environment}"
-  location            = var.region
+  location            = var.cluster_location != null ? var.cluster_location : var.region
   project             = var.project_id
   network             = var.network_id
   subnetwork          = var.subnet_id
@@ -97,18 +97,12 @@ resource "google_container_cluster" "primary" {
 
 # Dedicated 3-Node Pool for OmniPulse Workloads (e2-standard-4)
 resource "google_container_node_pool" "primary_nodes" {
-  name     = "omnipulse-node-pool-${var.environment}"
-  location = var.region
-  cluster  = google_container_cluster.primary.name
-  project  = var.project_id
-
-  # 3 distinct regional zones (1 node per zone = 3 nodes total across high availability domains)
-  node_locations = var.node_locations != null ? var.node_locations : [
-    "${var.region}-a",
-    "${var.region}-b",
-    "${var.region}-c"
-  ]
-  node_count = var.node_count
+  name           = "omnipulse-node-pool-${var.environment}"
+  location       = var.cluster_location != null ? var.cluster_location : var.region
+  cluster        = google_container_cluster.primary.name
+  project        = var.project_id
+  node_locations = var.node_locations
+  node_count     = var.node_count
 
   management {
     auto_repair  = true

@@ -8,6 +8,12 @@ variable "region" {
   description = "GCP Region for GKE Cluster"
 }
 
+variable "cluster_location" {
+  type        = string
+  description = "Cluster location (zone or region, e.g. us-central1-a)"
+  default     = "us-central1-a"
+}
+
 variable "environment" {
   type        = string
   description = "Environment name (dev)"
@@ -61,13 +67,13 @@ variable "master_authorized_cidrs" {
 
 variable "node_count" {
   type        = number
-  description = "Number of nodes per zone in the node pool (with 3 zones, node_count=1 creates 3 nodes total)"
-  default     = 1
+  description = "Number of worker nodes for the node pool"
+  default     = 3
 }
 
 variable "node_locations" {
   type        = list(string)
-  description = "Specific zones for the node pool (defaults to 3 zones in the region)"
+  description = "Specific zones for the node pool (null for zonal cluster)"
   default     = null
 }
 

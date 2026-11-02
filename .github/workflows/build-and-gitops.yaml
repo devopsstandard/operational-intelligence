@@ -25,6 +25,7 @@ permissions:
 
 env:
   GCP_REGION: us-central1
+  GCP_ZONE: us-central1-a
 
 jobs:
   validate-k8s:
@@ -93,7 +94,7 @@ jobs:
         uses: google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: ${{ env.GKE_CLUSTER }}
-          location: ${{ env.GCP_REGION }}
+          location: ${{ env.GCP_ZONE }}
 
       - name: Sync GitOps Applications & Clean Test Workloads
         run: |

@@ -53,18 +53,19 @@ module "vpc" {
   services_cidr = "10.20.0.0/20"
 }
 
-# 2. VPC-Native Standard GKE Cluster (Dev: 3-Node Dedicated Cluster e2-standard-4)
+# 2. VPC-Native Standard GKE Cluster (Dev: 3-Node Dedicated Cluster e2-standard-4 in us-central1-a)
 module "gke" {
   source                        = "../../modules/gke"
   project_id                    = var.project_id
   region                        = var.region
+  cluster_location              = var.cluster_zone
   environment                   = "dev"
   network_id                    = module.vpc.network_id
   subnet_id                     = module.vpc.subnet_id
   pods_secondary_range_name     = module.vpc.pods_secondary_range_name
   services_secondary_range_name = module.vpc.services_secondary_range_name
   machine_type                  = "e2-standard-4"
-  node_count                    = 1 # 1 node per zone across 3 regional zones = 3 nodes total
+  node_count                    = 3 # 3 dedicated nodes in us-central1-a
 }
 
 # 3. Artifact Registry for Container Images

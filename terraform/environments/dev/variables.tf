@@ -9,6 +9,12 @@ variable "region" {
   default     = "us-central1"
 }
 
+variable "cluster_zone" {
+  type        = string
+  description = "GCP Zone for GKE Cluster (e.g. us-central1-a)"
+  default     = "us-central1-a"
+}
+
 variable "github_repo" {
   type        = string
   description = "GitHub repository authorized for CI/CD WIF (format: owner/repo)"
@@ -64,4 +70,3 @@ variable "enable_robusta" {
   description = "Enable Robusta OSS incident triage and automated remediation engine"
   default     = true
 }
-

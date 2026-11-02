@@ -41,6 +41,7 @@ permissions:
 
 env:
   GCP_REGION: us-central1
+  GCP_ZONE: us-central1-a
 
 jobs:
   detect-changes:
@@ -191,8 +192,8 @@ jobs:
 
       - name: Authenticate to GKE & Rollout Pods
         run: |
-          echo "==> Configuring GKE credentials for cluster omnipulse-gke-cluster-${ENV_NAME} in ${GCP_REGION}..."
-          gcloud container clusters get-credentials omnipulse-gke-cluster-${ENV_NAME} --region=${GCP_REGION} --project=${GCP_PROJECT}
+          echo "==> Configuring GKE credentials for cluster omnipulse-gke-cluster-${ENV_NAME} in ${GCP_ZONE}..."
+          gcloud container clusters get-credentials omnipulse-gke-cluster-${ENV_NAME} --zone=${GCP_ZONE} --project=${GCP_PROJECT}
           
           echo "==> Rolling out updated image to deployment/${{ matrix.service }} in namespace omnipulse-${ENV_NAME}..."
           if [ "${{ matrix.service }}" = "loadgenerator" ]; then
