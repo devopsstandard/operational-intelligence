@@ -10,8 +10,8 @@ ENV_TARGET="${1:-dev}"
 CLUSTER_NAME="boutique-gke-cluster-${ENV_TARGET}"
 
 echo "==> Connecting to GKE Cluster: ${CLUSTER_NAME}..."
-gcloud container clusters get-credentials "${CLUSTER_NAME}" --region=us-central1 2>/dev/null || \
-gcloud container clusters get-credentials "${CLUSTER_NAME}" --region=us-central1-a
+gcloud container clusters get-credentials "${CLUSTER_NAME}" --region=europe-west1 2>/dev/null || \
+gcloud container clusters get-credentials "${CLUSTER_NAME}" --region=europe-west1-a
 
 echo "==> Fetching initial admin password for Argo CD in namespace 'argocd'..."
 PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)

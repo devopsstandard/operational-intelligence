@@ -1,5 +1,5 @@
 # Production Robusta OSS Helm Values for Operational Intelligence Platform
-clusterName: "gke-us-central1-prod-01"
+clusterName: "omnipulse-gke-cluster-dev"
 isSmallCluster: true
 
 # 1. Runner Pod Configuration & Workload Identity
@@ -9,7 +9,7 @@ runner:
     create: true
     name: "robusta-runner-service-account"
     annotations:
-      iam.gke.io/gcp-service-account: "robusta-runner-prod@PROJECT_ID.iam.gserviceaccount.com"
+      iam.gke.io/gcp-service-account: "robusta-runner-dev@PROJECT_ID.iam.gserviceaccount.com"
   
   resources:
     requests:
@@ -29,12 +29,12 @@ rbac:
 
 # 3. Global Platform Context
 globalConfig:
-  cluster_name: "gke-us-central1-prod-01"
+  cluster_name: "omnipulse-gke-cluster-dev"
   signing_key: "robusta-oss-internal"
   account_id: "operational-intelligence"
   gcp_project: "PROJECT_ID"
   gemini_model: "gemini-1.5-flash"
-  bq_dataset: "ops_analytics_prod"
+  bq_dataset: "ops_analytics_dev"
   slack_channel: "operational-intelligence"
   prometheus_url: "http://prometheus-operated.monitoring.svc.cluster.local:9090"
   alertmanager_url: "http://alertmanager-operated.monitoring.svc.cluster.local:9093"

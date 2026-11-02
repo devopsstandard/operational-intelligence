@@ -29,7 +29,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: us-central1-docker.pkg.dev/festive-ally-443007-r4/omnipulse-containers-dev/productcatalogservice:dev
+        image: europe-west1-docker.pkg.dev/festive-ally-443007-r4/omnipulse-containers-dev/productcatalogservice:dev
         ports:
         - containerPort: 3550
         env:

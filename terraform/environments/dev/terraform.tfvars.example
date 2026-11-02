@@ -1,5 +1,5 @@
 project_id  = "your-gcp-project-id"
-region      = "us-central1"
+region      = "europe-west1"
 github_repo = "devopsstandard/operational-intelligence"
 
 # Argo CD Slack Notifications (Optional)

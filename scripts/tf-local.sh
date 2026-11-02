@@ -27,7 +27,7 @@ if [ -z "${GCP_PROJECT_ID:-}" ] || [ "$GCP_PROJECT_ID" == "your-gcp-project-id" 
   exit 1
 fi
 
-REGION="${GCP_REGION:-us-central1}"
+REGION="${GCP_REGION:-europe-west1}"
 REPO="${GITHUB_REPO:-}"
 
 TARGET_DIR="${ROOT_DIR}/terraform/environments/${ENV_TARGET}"

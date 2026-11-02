@@ -107,7 +107,7 @@ resource "google_container_cluster" "primary" {
   }
 }
 
-# Dedicated 3-Node Pool for OmniPulse Workloads (e2-standard-4 in us-central1-c)
+# Dedicated 3-Node Pool for OmniPulse Workloads (e2-standard-4 in europe-west1-b)
 resource "google_container_node_pool" "primary_nodes" {
   name           = "omnipulse-node-pool-${var.environment}"
   location       = var.cluster_location != null ? var.cluster_location : var.region

@@ -6,13 +6,13 @@ variable "project_id" {
 variable "region" {
   type        = string
   description = "GCP Region"
-  default     = "us-central1"
+  default     = "europe-west1"
 }
 
 variable "cluster_zone" {
   type        = string
-  description = "GCP Zone for GKE Cluster (e.g. us-central1-a)"
-  default     = "us-central1-c"
+  description = "GCP Zone for GKE Cluster (e.g. europe-west1-b)"
+  default     = "europe-west1-b"
 }
 
 variable "github_repo" {

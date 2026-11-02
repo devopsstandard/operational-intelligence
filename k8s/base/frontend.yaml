@@ -32,7 +32,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: us-central1-docker.pkg.dev/festive-ally-443007-r4/omnipulse-containers-dev/frontend:dev
+          image: europe-west1-docker.pkg.dev/festive-ally-443007-r4/omnipulse-containers-dev/frontend:dev
           ports:
           - containerPort: 8080
           readinessProbe:

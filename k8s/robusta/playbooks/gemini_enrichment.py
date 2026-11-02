@@ -45,7 +45,7 @@ Ensure the output is ONLY valid JSON with no markdown formatting.
 """
 
 class GeminiDiagnostics:
-    def __init__(self, project_id: Optional[str] = None, location: str = "us-central1", model_name: str = "gemini-1.5-flash"):
+    def __init__(self, project_id: Optional[str] = None, location: str = "europe-west1", model_name: str = "gemini-1.5-flash"):
         self.project_id = project_id or os.environ.get("GCP_PROJECT", "operational-intelligence")
         self.location = location
         self.model_name = model_name

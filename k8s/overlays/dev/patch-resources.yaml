@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: server
-        image: us-central1-docker.pkg.dev/festive-ally-443007-r4/omnipulse-containers-dev/frontend:dev
+        image: europe-west1-docker.pkg.dev/festive-ally-443007-r4/omnipulse-containers-dev/frontend:dev
         env:
         - name: ENV_PLATFORM
           value: "gke-dev"

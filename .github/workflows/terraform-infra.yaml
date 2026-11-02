@@ -30,8 +30,8 @@ permissions:
   id-token: write
 
 env:
-  GCP_REGION: us-central1
-  GCP_ZONE: us-central1-c
+  GCP_REGION: europe-west1
+  GCP_ZONE: europe-west1-b
 
 jobs:
   terraform-run:

@@ -37,7 +37,7 @@ if (Test-Path $envFile) {
 
 $projId = [System.Environment]::GetEnvironmentVariable("GCP_PROJECT_ID")
 $region = [System.Environment]::GetEnvironmentVariable("GCP_REGION")
-if (-not $region) { $region = "us-central1" }
+if (-not $region) { $region = "europe-west1" }
 $githubRepo = [System.Environment]::GetEnvironmentVariable("GITHUB_REPO")
 if (-not $githubRepo) { $githubRepo = "" }
 
