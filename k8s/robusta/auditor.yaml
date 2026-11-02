@@ -13,7 +13,7 @@ data:
     from google.cloud import bigquery
 
     PROJECT_ID = os.environ.get("GCP_PROJECT", "festive-ally-443007-r4")
-    DATASET_ID = os.environ.get("BQ_DATASET", "ops_analytics_prod")
+    DATASET_ID = os.environ.get("BQ_DATASET", "ops_analytics_dev")
     TABLE_ID = f"{PROJECT_ID}.{DATASET_ID}.operational_remediation_audit"
 
     print(f"==> Initializing BigQuery Client for {TABLE_ID}...")
@@ -109,7 +109,7 @@ spec:
       containers:
         - name: auditor
           image: robustadev/robusta-runner:0.18.0
-          command: ["python3", "/app/auditor.py"]
+          command: ["python3", "/opt/auditor/auditor.py"]
           ports:
             - containerPort: 8080
               name: http
@@ -117,7 +117,7 @@ spec:
             - name: GCP_PROJECT
               value: "festive-ally-443007-r4"
             - name: BQ_DATASET
-              value: "ops_analytics_prod"
+              value: "ops_analytics_dev"
           resources:
             requests:
               cpu: 250m
@@ -127,7 +127,7 @@ spec:
               memory: 512Mi
           volumeMounts:
             - name: script-vol
-              mountPath: /app
+              mountPath: /opt/auditor
       volumes:
         - name: script-vol
           configMap:

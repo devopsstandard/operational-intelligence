@@ -19,7 +19,7 @@ spec:
         app.kubernetes.io/name: otel-collector
         app.kubernetes.io/part-of: omnipulse-observability
       annotations:
-        checksum/config: "v3-googlecloudstorage"
+        checksum/config: "v4-gcs-schema-fix"
     spec:
       serviceAccountName: otel-collector-sa
       terminationGracePeriodSeconds: 15
