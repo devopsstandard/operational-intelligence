@@ -132,8 +132,9 @@ resource "google_container_node_pool" "primary_nodes" {
     ]
 
     labels = {
-      environment                 = var.environment
-      "app.kubernetes.io/part-of" = "omnipulse"
+      environment = var.environment
+      role        = "worker"
+      platform    = "omnipulse"
     }
 
     # Standard Workload Identity on nodes
