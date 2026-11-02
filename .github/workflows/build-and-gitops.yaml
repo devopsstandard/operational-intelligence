@@ -113,6 +113,7 @@ jobs:
           kubectl apply -k k8s/cert-manager || true
           kubectl apply -k k8s/otel
           kubectl rollout restart deployment otel-collector -n opentelemetry || true
+          kubectl rollout status deployment/otel-collector -n opentelemetry --timeout=60s || (echo "==> OTel Collector logs:" && kubectl logs -n opentelemetry deployment/otel-collector --tail=30)
           kubectl apply -k k8s/grafana-ingress
 
           echo "==> Applying Kustomize microservices manifests for ${ENV_NAME}..."
