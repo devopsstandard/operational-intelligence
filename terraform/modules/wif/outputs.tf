@@ -14,6 +14,6 @@ output "provider_name" {
 }
 
 output "service_account_email" {
-  value       = var.create_wif ? google_service_account.cicd_sa[0].email : "boutique-cicd-sa-${var.environment}@${var.project_id}.iam.gserviceaccount.com"
+  value       = var.create_wif ? google_service_account.cicd_sa[0].email : "omnipulse-cicd-sa-${var.environment}@${var.project_id}.iam.gserviceaccount.com"
   description = "Service Account email for GitHub Actions CI/CD"
 }

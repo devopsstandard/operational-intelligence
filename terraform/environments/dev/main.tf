@@ -53,7 +53,7 @@ module "vpc" {
   services_cidr = "10.20.0.0/20"
 }
 
-# 2. VPC-Native GKE Autopilot Cluster (Dev: Cost-optimized with Spot Pods)
+# 2. VPC-Native Standard GKE Cluster (Dev: 3-Node Dedicated Cluster e2-standard-4)
 module "gke" {
   source                        = "../../modules/gke"
   project_id                    = var.project_id
@@ -63,6 +63,8 @@ module "gke" {
   subnet_id                     = module.vpc.subnet_id
   pods_secondary_range_name     = module.vpc.pods_secondary_range_name
   services_secondary_range_name = module.vpc.services_secondary_range_name
+  machine_type                  = "e2-standard-4"
+  node_count                    = 1 # 1 node per zone across 3 regional zones = 3 nodes total
 }
 
 # 3. Artifact Registry for Container Images
@@ -82,7 +84,7 @@ module "wif" {
   create_wif  = var.create_wif
 }
 
-# 5. Argo CD GitOps Engine Deployment (Dev: Single Replica, LoadBalancer)
+# 5. Argo CD GitOps Engine Deployment (Dev: Single Replica, ClusterIP)
 module "argocd" {
   source                     = "../../modules/argocd"
   environment                = "dev"
@@ -99,25 +101,25 @@ module "argocd" {
 
 # 6. Reserved Global Static IPs for Services (*.devopsstandard.name.ng)
 resource "google_compute_global_address" "ingress_ip" {
-  name        = "boutique-ingress-ip-dev"
+  name        = "omnipulse-ingress-ip-dev"
   description = "Static IP for Headlamp Ingress (headlamp.devopsstandard.name.ng)"
   project     = var.project_id
 }
 
 resource "google_compute_global_address" "frontend_ip" {
-  name        = "boutique-frontend-ip-dev"
-  description = "Static IP for Boutique Frontend (dev.devopsstandard.name.ng)"
+  name        = "omnipulse-frontend-ip-dev"
+  description = "Static IP for OmniPulse Frontend (dev.devopsstandard.name.ng)"
   project     = var.project_id
 }
 
 resource "google_compute_global_address" "argocd_ip" {
-  name        = "boutique-argocd-ip-dev"
+  name        = "omnipulse-argocd-ip-dev"
   description = "Static IP for Argo CD (argocd.devopsstandard.name.ng)"
   project     = var.project_id
 }
 
 resource "google_compute_global_address" "grafana_ip" {
-  name        = "boutique-grafana-ip-dev"
+  name        = "omnipulse-grafana-ip-dev"
   description = "Static IP for Grafana (grafana.devopsstandard.name.ng)"
   project     = var.project_id
 }
@@ -129,7 +131,7 @@ module "robusta" {
   project_id       = var.project_id
   region           = var.region
   environment      = "dev"
-  cluster_name     = "omnipulse-gke-cluster-dev"
+  cluster_name     = module.gke.cluster_name
   slack_channel    = var.slack_channel
   slack_api_key    = var.slack_token
   bigquery_dataset = var.bigquery_dataset
@@ -145,4 +147,3 @@ module "opentelemetry" {
   region      = var.region
   environment = "dev"
 }
-

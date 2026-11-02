@@ -31,7 +31,7 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
 # Dedicated Service Account for CI/CD Deployment
 resource "google_service_account" "cicd_sa" {
   count        = var.create_wif ? 1 : 0
-  account_id   = "boutique-cicd-sa-${var.environment}"
+  account_id   = "omnipulse-cicd-sa-${var.environment}"
   display_name = "GitHub Actions CI/CD SA (${var.environment})"
   project      = var.project_id
 }

@@ -1,6 +1,6 @@
 output "cluster_name" {
   value       = google_container_cluster.primary.name
-  description = "The name of the GKE Autopilot cluster"
+  description = "The name of the GKE cluster"
 }
 
 output "cluster_endpoint" {
@@ -20,5 +20,10 @@ output "workload_identity_pool" {
 
 output "cluster_id" {
   value       = google_container_cluster.primary.id
-  description = "The unique ID of the GKE Autopilot cluster"
+  description = "The unique ID of the GKE cluster"
+}
+
+output "node_pool_name" {
+  value       = google_container_node_pool.primary_nodes.name
+  description = "Name of the primary OmniPulse GKE node pool"
 }

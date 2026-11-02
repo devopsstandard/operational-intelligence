@@ -75,7 +75,7 @@ metadata:
   namespace: headlamp
   annotations:
     kubernetes.io/ingress.class: "gce"
-    kubernetes.io/ingress.global-static-ip-name: "boutique-ingress-ip-dev"
+    kubernetes.io/ingress.global-static-ip-name: "omnipulse-ingress-ip-dev"
     # networking.gke.io/managed-certificates: "headlamp-cert-v2"
 spec:
   rules:

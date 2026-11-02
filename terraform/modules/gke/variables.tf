@@ -5,12 +5,12 @@ variable "project_id" {
 
 variable "region" {
   type        = string
-  description = "GCP Region for GKE Autopilot Cluster"
+  description = "GCP Region for GKE Cluster"
 }
 
 variable "environment" {
   type        = string
-  description = "Environment name (dev, prod)"
+  description = "Environment name (dev)"
 }
 
 variable "network_id" {
@@ -57,4 +57,28 @@ variable "master_authorized_cidrs" {
       display_name = "Allow All (Restrict in production)"
     }
   ]
+}
+
+variable "node_count" {
+  type        = number
+  description = "Number of nodes per zone in the node pool (with 3 zones, node_count=1 creates 3 nodes total)"
+  default     = 1
+}
+
+variable "node_locations" {
+  type        = list(string)
+  description = "Specific zones for the node pool (defaults to 3 zones in the region)"
+  default     = null
+}
+
+variable "machine_type" {
+  type        = string
+  description = "Machine type for the standard GKE nodes"
+  default     = "e2-standard-4"
+}
+
+variable "disk_size_gb" {
+  type        = number
+  description = "Disk size per node in GB"
+  default     = 50
 }

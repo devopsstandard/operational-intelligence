@@ -1,13 +1,13 @@
 # Custom VPC Network
 resource "google_compute_network" "vpc" {
-  name                    = "boutique-vpc-${var.environment}"
+  name                    = "omnipulse-vpc-${var.environment}"
   auto_create_subnetworks = false
   project                 = var.project_id
 }
 
 # Subnet for GKE Nodes with Secondary Ranges for VPC-Native Pods and Services
 resource "google_compute_subnetwork" "subnet" {
-  name                     = "boutique-gke-subnet-${var.environment}"
+  name                     = "omnipulse-gke-subnet-${var.environment}"
   ip_cidr_range            = var.subnet_cidr
   region                   = var.region
   network                  = google_compute_network.vpc.id
@@ -27,7 +27,7 @@ resource "google_compute_subnetwork" "subnet" {
 
 # Cloud Router for Outbound NAT
 resource "google_compute_router" "router" {
-  name    = "boutique-router-${var.environment}"
+  name    = "omnipulse-router-${var.environment}"
   region  = var.region
   network = google_compute_network.vpc.id
   project = var.project_id
@@ -35,7 +35,7 @@ resource "google_compute_router" "router" {
 
 # Cloud NAT for GKE Nodes internet access (pulling external images, APIs)
 resource "google_compute_router_nat" "nat" {
-  name                               = "boutique-nat-${var.environment}"
+  name                               = "omnipulse-nat-${var.environment}"
   router                             = google_compute_router.router.name
   region                             = var.region
   nat_ip_allocate_option             = "AUTO_ONLY"

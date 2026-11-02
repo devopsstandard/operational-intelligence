@@ -1,7 +1,7 @@
-# Service Account for GKE Autopilot Nodes
+# Service Account for Standard GKE Nodes
 resource "google_service_account" "gke_nodes_sa" {
-  account_id   = "boutique-gke-sa-${var.environment}"
-  display_name = "Online Boutique GKE Autopilot Nodes SA (${var.environment})"
+  account_id   = "omnipulse-gke-sa-${var.environment}"
+  display_name = "OmniPulse GKE Nodes SA (${var.environment})"
   project      = var.project_id
 }
 
@@ -24,15 +24,19 @@ resource "google_project_iam_member" "node_ar_reader" {
   member  = "serviceAccount:${google_service_account.gke_nodes_sa.email}"
 }
 
-# VPC-Native GKE Autopilot Cluster
+# Standard VPC-Native GKE Cluster
 resource "google_container_cluster" "primary" {
-  name                = "boutique-gke-cluster-${var.environment}"
+  name                = "omnipulse-gke-cluster-${var.environment}"
   location            = var.region
   project             = var.project_id
   network             = var.network_id
   subnetwork          = var.subnet_id
-  enable_autopilot    = true
-  deletion_protection = var.environment == "prod" ? true : false
+  enable_autopilot    = false
+  deletion_protection = false
+
+  # Remove default node pool immediately to manage nodes through explicit node pool resource
+  remove_default_node_pool = true
+  initial_node_count       = 1
 
   # VPC-Native IP Allocation
   ip_allocation_policy {
@@ -61,17 +65,25 @@ resource "google_container_cluster" "primary" {
     }
   }
 
-  # Cluster Autoscaling & Custom Service Account for Autopilot Nodes
-  cluster_autoscaling {
-    auto_provisioning_defaults {
-      service_account = google_service_account.gke_nodes_sa.email
-      oauth_scopes = [
-        "https://www.googleapis.com/auth/cloud-platform"
-      ]
+  # Keyless Workload Identity Federation enabled on cluster
+  workload_identity_config {
+    workload_pool = "${var.project_id}.svc.id.goog"
+  }
+
+  # Add-ons configuration
+  addons_config {
+    http_load_balancing {
+      disabled = false
+    }
+    horizontal_pod_autoscaling {
+      disabled = false
+    }
+    network_policy_config {
+      disabled = true
     }
   }
 
-  # Release Channel (Autopilot requires a release channel, default REGULAR)
+  # Release Channel
   release_channel {
     channel = "REGULAR"
   }
@@ -80,6 +92,52 @@ resource "google_container_cluster" "primary" {
   maintenance_policy {
     daily_maintenance_window {
       start_time = "03:00"
+    }
+  }
+}
+
+# Dedicated 3-Node Pool for OmniPulse Workloads (e2-standard-4)
+resource "google_container_node_pool" "primary_nodes" {
+  name     = "omnipulse-node-pool-${var.environment}"
+  location = var.region
+  cluster  = google_container_cluster.primary.name
+  project  = var.project_id
+
+  # 3 distinct regional zones (1 node per zone = 3 nodes total across high availability domains)
+  node_locations = var.node_locations != null ? var.node_locations : [
+    "${var.region}-a",
+    "${var.region}-b",
+    "${var.region}-c"
+  ]
+  node_count = var.node_count
+
+  management {
+    auto_repair  = true
+    auto_upgrade = true
+  }
+
+  node_config {
+    machine_type    = var.machine_type
+    disk_size_gb    = var.disk_size_gb
+    disk_type       = "pd-balanced"
+    service_account = google_service_account.gke_nodes_sa.email
+
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+
+    labels = {
+      environment                 = var.environment
+      "app.kubernetes.io/part-of" = "omnipulse"
+    }
+
+    # Standard Workload Identity on nodes
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
+
+    metadata = {
+      disable-legacy-endpoints = "true"
     }
   }
 }

@@ -30,12 +30,12 @@ output "argocd_namespace" {
 
 output "ingress_static_ip" {
   value       = google_compute_global_address.ingress_ip.address
-  description = "Headlamp Ingress Static IP (8.233.9.144)"
+  description = "Headlamp Ingress Static IP"
 }
 
 output "frontend_static_ip" {
   value       = google_compute_global_address.frontend_ip.address
-  description = "Boutique Frontend Dev Ingress Static IP (dev.devopsstandard.name.ng)"
+  description = "OmniPulse Frontend Dev Ingress Static IP (dev.devopsstandard.name.ng)"
 }
 
 output "argocd_static_ip" {
@@ -48,6 +48,7 @@ output "static_ips" {
     headlamp = google_compute_global_address.ingress_ip.address
     frontend = google_compute_global_address.frontend_ip.address
     argocd   = google_compute_global_address.argocd_ip.address
+    grafana  = google_compute_global_address.grafana_ip.address
   }
   description = "All reserved static IPs to configure in DNS A-records"
 }
@@ -57,7 +58,7 @@ output "domain_urls" {
     marketplace = "https://dev.${var.domain_name}"
     argocd      = "https://argocd.${var.domain_name}"
     headlamp    = "https://headlamp.${var.domain_name}"
+    grafana     = "https://grafana.${var.domain_name}"
   }
-  description = "Configured Domain endpoints for Dev environment"
+  description = "Application URLs across domains"
 }
-

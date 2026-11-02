@@ -18,7 +18,6 @@ on:
         type: choice
         options:
           - dev
-          - prod
 
 permissions:
   contents: read
@@ -37,9 +36,6 @@ jobs:
 
       - name: Validate Dev Overlay
         run: kubectl kustomize k8s/overlays/dev > /dev/null
-
-      - name: Validate Prod Overlay
-        run: kubectl kustomize k8s/overlays/prod > /dev/null
 
   gitops-rollout:
     name: GitOps Rollout & Argo CD Sync
@@ -68,7 +64,7 @@ jobs:
             ENV_NAME="${{ github.ref_name == 'dev' && 'dev' || 'dev' }}"
           fi
           echo "ENV_NAME=${ENV_NAME}" >> $GITHUB_ENV
-          echo "GKE_CLUSTER=boutique-gke-cluster-${ENV_NAME}" >> $GITHUB_ENV
+          echo "GKE_CLUSTER=omnipulse-gke-cluster-${ENV_NAME}" >> $GITHUB_ENV
 
           # Support direct WIF_PROVIDER secret or dynamically build from GCP_PROJECT_NUMBER
           CUSTOM_WIF="${{ secrets.WIF_PROVIDER }}"
@@ -82,7 +78,7 @@ jobs:
           if [ -n "$CUSTOM_SA" ]; then
             echo "WIF_SERVICE_ACCOUNT=${CUSTOM_SA}" >> $GITHUB_ENV
           else
-            echo "WIF_SERVICE_ACCOUNT=boutique-cicd-sa-${ENV_NAME}@${PROJ_ID}.iam.gserviceaccount.com" >> $GITHUB_ENV
+            echo "WIF_SERVICE_ACCOUNT=omnipulse-cicd-sa-${ENV_NAME}@${PROJ_ID}.iam.gserviceaccount.com" >> $GITHUB_ENV
           fi
 
       - name: Authenticate to GCP (WIF with SA Key Fallback)
@@ -125,7 +121,7 @@ jobs:
           kubectl rollout restart deployment robusta-bigquery-auditor -n robusta || true
 
           echo "==> Waiting for emailservice rollout to complete..."
-          kubectl rollout status deployment/emailservice -n omnipulse-${ENV_NAME} --timeout=360s || (echo "==> Rollout progressing under GKE Autopilot node autoscaling; current status:" && kubectl get pods -n omnipulse-${ENV_NAME} -l app=emailservice)
+          kubectl rollout status deployment/emailservice -n omnipulse-${ENV_NAME} --timeout=360s || (echo "==> Rollout progressing; current status:" && kubectl get pods -n omnipulse-${ENV_NAME} -l app=emailservice)
           echo "==> Done! GitOps applications synced successfully via GitHub Actions."
 
       - name: Automatically Record Remediation Event to BigQuery Audit Log
